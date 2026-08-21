@@ -16,17 +16,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Install Dependencies & Capacitor
+      - name: Prepare web assets folder
+        run: |
+          mkdir -p www
+          cp index.html www/ 2>/dev/null || true
+          cp manifest.json www/ 2>/dev/null || true
+          cp apple-touch-icon.png www/ 2>/dev/null || true
+
+      - name: Install Dependencies & Setup Capacitor
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/ios
-          npx cap init Renji com.renji.app --web-dir .
+          npx cap init Renji com.renji.app --web-dir www
           npx cap add ios
           npx cap sync ios
 
-      - name: Build Xcode Project (Unsigned IPA)
+      - name: Build Xcode Project
         run: |
           cd ios/App
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO
