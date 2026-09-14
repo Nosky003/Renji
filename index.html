@@ -17,19 +17,26 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
       width: 100%;
-      height: 100dvh;
-      background-color: #ffffff;
+      height: 100%;
       overflow: hidden;
+      position: fixed;
+      background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    body {
+    #app {
       display: flex;
       flex-direction: column;
+      width: 100%;
+      height: 100dvh;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     /* Top Bar */
@@ -91,7 +98,7 @@
       border-radius: 50%;
     }
 
-    /* Area Messaggi */
+    /* Area Chat */
     .chat-container {
       flex: 1;
       padding: 16px;
@@ -130,9 +137,12 @@
       width: 100%;
     }
 
+    /* Editable Div per evitare la barra grigia di iOS */
     .input-box {
       width: 100%;
-      padding: 12px 46px 12px 20px;
+      min-height: 44px;
+      max-height: 120px;
+      padding: 11px 48px 11px 20px;
       border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
@@ -141,17 +151,23 @@
       box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
       background-color: #ffffff;
       color: #000000;
-      -webkit-appearance: none;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
-    .input-box::placeholder {
+    .input-box:empty:before {
+      content: attr(data-placeholder);
       color: #8e8e93;
+      pointer-events: none;
+      display: block;
     }
 
-    /* Pulsante d'invio: Cerchio bianco con aeroplanino nero centrato */
+    /* Pulsante Aeroplano */
     .send-btn {
       position: absolute;
       right: 6px;
+      bottom: 5px;
       width: 34px;
       height: 34px;
       border-radius: 50%;
@@ -166,8 +182,8 @@
     }
 
     .send-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       fill: #000000;
       display: block;
     }
@@ -175,45 +191,45 @@
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="icon-btn">
-      <div class="lines-icon">
-        <span></span>
-        <span></span>
+  <div id="app">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="icon-btn">
+        <div class="lines-icon">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="title">Renji</div>
+
+      <div class="icon-btn">
+        <div class="dots-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </div>
     </div>
 
-    <div class="title">Renji</div>
+    <!-- Area Chat -->
+    <div class="chat-container" id="chatContainer"></div>
 
-    <div class="icon-btn">
-      <div class="dots-icon">
-        <span></span>
-        <span></span>
-        <span></span>
+    <!-- Input Area senza form / input -->
+    <div class="input-container">
+      <div class="input-wrapper">
+        <div 
+          id="userInput" 
+          class="input-box" 
+          contenteditable="true" 
+          data-placeholder="Chiedi a Renji"
+        ></div>
+        <button type="button" id="sendBtn" class="send-btn" aria-label="Invia">
+          <svg viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Area Chat -->
-  <div class="chat-container" id="chatContainer"></div>
-
-  <!-- Input senza form per evitare la toolbar grigia di iOS -->
-  <div class="input-container">
-    <div class="input-wrapper">
-      <input 
-        type="text" 
-        id="userInput" 
-        class="input-box" 
-        placeholder="Chiedi a Renji" 
-        autocomplete="off" 
-        enterkeyhint="send"
-      />
-      <button type="button" id="sendBtn" class="send-btn" aria-label="Invia">
-        <svg viewBox="0 0 24 24">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
-      </button>
     </div>
   </div>
 
@@ -221,34 +237,49 @@
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const chatContainer = document.getElementById('chatContainer');
+    const app = document.getElementById('app');
 
     function handleSend() {
-      const text = userInput.value.trim();
+      const text = userInput.innerText.trim();
       if (text !== "") {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'user-message';
         msgDiv.textContent = text;
         
         chatContainer.appendChild(msgDiv);
-        userInput.value = "";
+        userInput.innerText = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     }
 
-    sendBtn.addEventListener('click', handleSend);
+    sendBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleSend();
+    });
 
     userInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleSend();
       }
     });
 
-    // Gestione altezza dinamica quando si apre la tastiera iOS
+    // Blocco dello scroll indesiderato della pagina
+    document.body.addEventListener('touchmove', (e) => {
+      if (!chatContainer.contains(e.target) && !userInput.contains(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // Regolazione dinamica precisa per tastiera iOS
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
-        document.body.style.height = `${window.visualViewport.height}px`;
+        app.style.height = `${window.visualViewport.height}px`;
         chatContainer.scrollTop = chatContainer.scrollHeight;
+      });
+      
+      window.visualViewport.addEventListener('scroll', () => {
+        window.scrollTo(0, 0);
       });
     }
   </script>
