@@ -20,6 +20,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Blocca completamente l'effetto rimbalzo (bounce) di iOS */
     html, body {
       width: 100%;
       height: 100%;
@@ -31,6 +32,8 @@
       bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overscroll-behavior: none !important;
+      -webkit-overscroll-behavior: none !important;
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
@@ -51,6 +54,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      overscroll-behavior: none;
     }
 
     /* Top Bar */
@@ -124,7 +128,7 @@
       overscroll-behavior: contain;
     }
 
-    /* Messaggio dell'utente (Destra) */
+    /* Messaggio dell'utente (Destra con fumetto) */
     .user-message {
       align-self: flex-end;
       background-color: #ffffff;
@@ -138,16 +142,15 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Messaggio di Renji (Sinistra - Senza cerchi) */
+    /* Messaggio di Renji (Sinistra - Senza cerchio né sfondo) */
     .renji-message {
       align-self: flex-start;
-      background-color: #f2f2f7;
+      background-color: transparent;
       color: #000000;
       border: none;
-      padding: 10px 18px;
-      border-radius: 20px;
+      padding: 6px 4px;
       font-size: 1rem;
-      max-width: 80%;
+      max-width: 85%;
       word-wrap: break-word;
     }
 
@@ -158,7 +161,6 @@
       background-color: #ffffff;
       flex-shrink: 0;
       border-top: none;
-      touch-action: none;
     }
 
     .input-wrapper {
@@ -187,7 +189,7 @@
       color: #8e8e93;
     }
 
-    /* Pulsante d'invio */
+    /* Pulsante d'invio con aeroplanino leggermente più grande */
     .send-btn {
       position: absolute;
       right: 5px;
@@ -205,8 +207,8 @@
     }
 
     .send-btn svg {
-      width: 16px;
-      height: 16px;
+      width: 19px;
+      height: 19px;
       fill: #000000;
       display: block;
     }
@@ -285,7 +287,7 @@
         userInput.value = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        // Risposta di Renji (Sinistra)
+        // Risposta di Renji (Sinistra senza cerchi/sfondo)
         setTimeout(() => {
           const lowerText = text.toLowerCase();
           let replyText = "Non ho capito bene, puoi ripetere?";
@@ -302,7 +304,7 @@
           renjiDiv.textContent = replyText;
           chatContainer.appendChild(renjiDiv);
           chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 500);
+        }, 300);
       }
     }
 
@@ -324,27 +326,28 @@
       }
     });
 
-    /* GESTIONE SWIPE PER ABBASSARE LA TASTIERA ED EVITARE SPOSTAMENTI */
-    let startY = 0;
+    /* FLUIDO E ISTANTANEO: Abbassare l'input trascinando verso il basso sia su input che su chat */
+    let touchStartY = 0;
 
-    chatContainer.addEventListener('touchstart', (e) => {
-      startY = e.touches[0].clientY;
-    }, { passive: true });
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY;
+    };
 
-    chatContainer.addEventListener('touchmove', (e) => {
-      const currentY = e.touches[0].clientY;
-      const diffY = currentY - startY;
+    const handleTouchMove = (e) => {
+      const touchCurrentY = e.touches[0].clientY;
+      const diffY = touchCurrentY - touchStartY;
 
-      // Se si trascina verso il basso, chiudi la tastiera
-      if (diffY > 40) {
+      // Se il dito scende verso il basso di oltre 15px, rimuove il focus chiudendo la tastiera al volo
+      if (diffY > 15 && document.activeElement === userInput) {
         userInput.blur();
       }
-    }, { passive: true });
+    };
 
-    // Blocca il trascinamento dell'input container verso l'alto
-    inputContainer.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
+    // Applicato sia all'area input che alla chat per la massima fluidità
+    inputContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+    inputContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+    chatContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+    chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     if (window.visualViewport) {
       const updateHeight = () => {
