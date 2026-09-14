@@ -129,13 +129,13 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Input Container bloccato */
+    /* Input Container senza linea superiore */
     .input-container {
       padding: 8px 16px;
       padding-bottom: max(8px, env(safe-area-inset-bottom));
       background-color: #ffffff;
       flex-shrink: 0;
-      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      border-top: none;
     }
 
     .input-wrapper {
@@ -152,7 +152,7 @@
       border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
-      font-size: 16px; /* Evita lo zoom automatico di iOS */
+      font-size: 16px;
       font-family: inherit;
       box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
       background-color: #ffffff;
@@ -164,7 +164,7 @@
       color: #8e8e93;
     }
 
-    /* Pulsante d'invio cerchio bianco con aereo nero centrato */
+    /* Pulsante d'invio */
     .send-btn {
       position: absolute;
       right: 5px;
@@ -266,7 +266,6 @@
       }
     });
 
-    // Ancoraggio rigido dello schermo per impedire lo scorrimento della pagina web su iOS
     if (window.visualViewport) {
       const updateHeight = () => {
         appViewport.style.height = `${window.visualViewport.height}px`;
