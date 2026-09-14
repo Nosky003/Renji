@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Renji</title>
   
   <link rel="manifest" href="manifest.json">
@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="Renji">
 
   <style>
-    * {
+    *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -25,18 +25,24 @@
       height: 100%;
       overflow: hidden;
       position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    #app {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100dvh;
+    /* Container principale fisso */
+    .app-viewport {
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     /* Top Bar */
@@ -98,7 +104,7 @@
       border-radius: 50%;
     }
 
-    /* Area Chat */
+    /* Area Chat unibody */
     .chat-container {
       flex: 1;
       padding: 16px;
@@ -107,6 +113,7 @@
       flex-direction: column;
       gap: 12px;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .user-message {
@@ -122,12 +129,13 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Input Container */
+    /* Input Container bloccato */
     .input-container {
-      padding: 10px 16px;
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      padding: 8px 16px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
       background-color: #ffffff;
       flex-shrink: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .input-wrapper {
@@ -137,37 +145,29 @@
       width: 100%;
     }
 
-    /* Editable Div per evitare la barra grigia di iOS */
     .input-box {
       width: 100%;
-      min-height: 44px;
-      max-height: 120px;
-      padding: 11px 48px 11px 20px;
+      height: 44px;
+      padding: 10px 48px 10px 20px;
       border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
-      font-size: 1rem;
+      font-size: 16px; /* Evita lo zoom automatico di iOS */
       font-family: inherit;
       box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
       background-color: #ffffff;
       color: #000000;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
+      -webkit-appearance: none;
     }
 
-    .input-box:empty:before {
-      content: attr(data-placeholder);
+    .input-box::placeholder {
       color: #8e8e93;
-      pointer-events: none;
-      display: block;
     }
 
-    /* Pulsante Aeroplano */
+    /* Pulsante d'invio cerchio bianco con aereo nero centrato */
     .send-btn {
       position: absolute;
-      right: 6px;
-      bottom: 5px;
+      right: 5px;
       width: 34px;
       height: 34px;
       border-radius: 50%;
@@ -191,7 +191,7 @@
 </head>
 <body>
 
-  <div id="app">
+  <div class="app-viewport" id="appViewport">
     <!-- Top Bar -->
     <div class="top-bar">
       <div class="icon-btn">
@@ -215,15 +215,20 @@
     <!-- Area Chat -->
     <div class="chat-container" id="chatContainer"></div>
 
-    <!-- Input Area senza form / input -->
+    <!-- Input Container -->
     <div class="input-container">
       <div class="input-wrapper">
-        <div 
+        <input 
+          type="text" 
           id="userInput" 
           class="input-box" 
-          contenteditable="true" 
-          data-placeholder="Chiedi a Renji"
-        ></div>
+          placeholder="Chiedi a Renji" 
+          autocomplete="off" 
+          autocorrect="off" 
+          autocapitalize="off" 
+          spellcheck="false"
+          enterkeyhint="send"
+        />
         <button type="button" id="sendBtn" class="send-btn" aria-label="Invia">
           <svg viewBox="0 0 24 24">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -237,51 +242,46 @@
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const chatContainer = document.getElementById('chatContainer');
-    const app = document.getElementById('app');
+    const appViewport = document.getElementById('appViewport');
 
     function handleSend() {
-      const text = userInput.innerText.trim();
+      const text = userInput.value.trim();
       if (text !== "") {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'user-message';
         msgDiv.textContent = text;
         
         chatContainer.appendChild(msgDiv);
-        userInput.innerText = "";
+        userInput.value = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     }
 
-    sendBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      handleSend();
-    });
+    sendBtn.addEventListener('click', handleSend);
 
     userInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === 'Enter') {
         e.preventDefault();
         handleSend();
       }
     });
 
-    // Blocco dello scroll indesiderato della pagina
-    document.body.addEventListener('touchmove', (e) => {
-      if (!chatContainer.contains(e.target) && !userInput.contains(e.target)) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-
-    // Regolazione dinamica precisa per tastiera iOS
+    // Ancoraggio rigido dello schermo per impedire lo scorrimento della pagina web su iOS
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        app.style.height = `${window.visualViewport.height}px`;
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      });
-      
-      window.visualViewport.addEventListener('scroll', () => {
+      const updateHeight = () => {
+        appViewport.style.height = `${window.visualViewport.height}px`;
         window.scrollTo(0, 0);
-      });
+        document.body.scrollTop = 0;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      };
+
+      window.visualViewport.addEventListener('resize', updateHeight);
+      window.visualViewport.addEventListener('scroll', updateHeight);
     }
+
+    document.addEventListener('scroll', () => {
+      window.scrollTo(0, 0);
+    });
   </script>
 
 </body>
