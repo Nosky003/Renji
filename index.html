@@ -20,7 +20,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Blocca completamente l'effetto rimbalzo (bounce) di iOS */
     html, body {
       width: 100%;
       height: 100%;
@@ -34,17 +33,8 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overscroll-behavior: none !important;
       -webkit-overscroll-behavior: none !important;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
     }
 
-    html::-webkit-scrollbar, body::-webkit-scrollbar, .app-viewport::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-
-    /* Container principale fisso */
     .app-viewport {
       position: absolute;
       top: 0;
@@ -54,7 +44,6 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      overscroll-behavior: none;
     }
 
     /* Top Bar */
@@ -128,7 +117,6 @@
       overscroll-behavior: contain;
     }
 
-    /* Messaggio dell'utente (Destra con fumetto) */
     .user-message {
       align-self: flex-end;
       background-color: #ffffff;
@@ -142,7 +130,7 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Messaggio di Renji (Sinistra - Senza cerchio né sfondo) */
+    /* Risposte di Renji senza cerchio/sfondo */
     .renji-message {
       align-self: flex-start;
       background-color: transparent;
@@ -173,7 +161,7 @@
     .input-box {
       width: 100%;
       height: 44px;
-      padding: 10px 48px 10px 20px;
+      padding: 10px 84px 10px 20px; /* Spazio a destra per microfono e aeroplanino */
       border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
@@ -189,7 +177,28 @@
       color: #8e8e93;
     }
 
-    /* Pulsante d'invio con aeroplanino leggermente più grande */
+    /* Microfono senza cerchio a sinistra dell'aeroplanino */
+    .mic-btn {
+      position: absolute;
+      right: 44px;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .mic-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #000000;
+    }
+
+    /* Pulsante aeroplanino */
     .send-btn {
       position: absolute;
       right: 5px;
@@ -212,13 +221,81 @@
       fill: #000000;
       display: block;
     }
+
+    /* Stili Menu Laterale */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+      z-index: 100;
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-menu.active {
+      transform: translateX(280px);
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .menu-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .side-menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: calc(env(safe-area-inset-top) + 16px) 20px 16px 20px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .close-menu-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .side-menu-content {
+      padding: 20px;
+    }
+
+    .side-menu-content ul {
+      list-style: none;
+    }
+
+    .side-menu-content li {
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
   <div class="app-viewport" id="appViewport">
     <div class="top-bar">
-      <div class="icon-btn">
+      <div class="icon-btn" id="leftMenuBtn">
         <div class="lines-icon">
           <span></span>
           <span></span>
@@ -251,6 +328,13 @@
           spellcheck="false"
           enterkeyhint="send"
         />
+
+        <button type="button" class="mic-btn" id="micBtn" aria-label="Microfono">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+          </svg>
+        </button>
+
         <button type="button" id="sendBtn" class="send-btn" aria-label="Invia">
           <svg viewBox="0 0 24 24">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -260,6 +344,8 @@
     </div>
   </div>
 
+  <script src="menu.js"></script>
+
   <script>
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -267,18 +353,25 @@
     const appViewport = document.getElementById('appViewport');
     const inputContainer = document.getElementById('inputContainer');
 
-    let botBrain = {};
+    // Cervello locale integrato + fallback di sicurezza
+    const botBrain = {
+      "ciao": "Ciao! Come posso aiutarti oggi?",
+      "come stai": "Sto benissimo, grazie! Tu come stai?",
+      "chi sei": "Sono Renji, il tuo assistente personale!",
+      "cosa puoi fare": "Posso rispondere ai tuoi messaggi e aiutarti nelle tue attività quotidiane.",
+      "grazie": "Prego! Sono sempre qui per aiutarti."
+    };
 
-    // Caricamento del cervello (cervello/risposte.json)
+    // Tenta comunque il caricamento dinamico da file
     fetch('cervello/risposte.json')
       .then(res => res.json())
-      .then(data => { botBrain = data; })
-      .catch(err => console.log('Errore caricamento cervello:', err));
+      .then(data => { Object.assign(botBrain, data); })
+      .catch(err => console.log('Utilizzo risposte predefinite'));
 
     function handleSend() {
       const text = userInput.value.trim();
       if (text !== "") {
-        // Messaggio Utente (Destra)
+        // Messaggio Utente
         const msgDiv = document.createElement('div');
         msgDiv.className = 'user-message';
         msgDiv.textContent = text;
@@ -287,7 +380,7 @@
         userInput.value = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        // Risposta di Renji (Sinistra senza cerchi/sfondo)
+        // Risposta di Renji
         setTimeout(() => {
           const lowerText = text.toLowerCase();
           let replyText = "Non ho capito bene, puoi ripetere?";
@@ -326,24 +419,21 @@
       }
     });
 
-    /* FLUIDO E ISTANTANEO: Abbassare l'input trascinando verso il basso sia su input che su chat */
-    let touchStartY = 0;
+    /* SPARIZIONE ISTANTANEA DELLA TASTIERA ALLA MINIMA SCIVOLATA VERSO IL BASSO */
+    let startY = 0;
 
     const handleTouchStart = (e) => {
-      touchStartY = e.touches[0].clientY;
+      startY = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e) => {
-      const touchCurrentY = e.touches[0].clientY;
-      const diffY = touchCurrentY - touchStartY;
-
-      // Se il dito scende verso il basso di oltre 15px, rimuove il focus chiudendo la tastiera al volo
-      if (diffY > 15 && document.activeElement === userInput) {
+      const currentY = e.touches[0].clientY;
+      // Appena si sposta di appena 2px verso il basso, chiude subito la tastiera
+      if (currentY - startY > 2 && document.activeElement === userInput) {
         userInput.blur();
       }
     };
 
-    // Applicato sia all'area input che alla chat per la massima fluidità
     inputContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
     inputContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
     chatContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
