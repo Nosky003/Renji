@@ -20,7 +20,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Nasconde completamente le scrollbar della pagina principale */
     html, body {
       width: 100%;
       height: 100%;
@@ -32,11 +31,10 @@
       bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -ms-overflow-style: none;  /* IE/Edge */
-      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
-    /* Nasconde scrollbar su Webkit (Safari/Chrome) per body ed elementi globali */
     html::-webkit-scrollbar, body::-webkit-scrollbar, .app-viewport::-webkit-scrollbar {
       display: none;
       width: 0;
@@ -114,7 +112,7 @@
       border-radius: 50%;
     }
 
-    /* Area Chat (Unica area in cui la scrollbar o lo scorrimento è consentito) */
+    /* Area Chat */
     .chat-container {
       flex: 1;
       padding: 16px;
@@ -126,6 +124,7 @@
       overscroll-behavior: contain;
     }
 
+    /* Messaggio dell'utente (Destra) */
     .user-message {
       align-self: flex-end;
       background-color: #ffffff;
@@ -139,13 +138,27 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Input Container senza bordi né scrollbar */
+    /* Messaggio di Renji (Sinistra - Senza cerchi) */
+    .renji-message {
+      align-self: flex-start;
+      background-color: #f2f2f7;
+      color: #000000;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 1rem;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    /* Input Container */
     .input-container {
       padding: 8px 16px;
       padding-bottom: max(8px, env(safe-area-inset-bottom));
       background-color: #ffffff;
       flex-shrink: 0;
       border-top: none;
+      touch-action: none;
     }
 
     .input-wrapper {
@@ -223,7 +236,7 @@
 
     <div class="chat-container" id="chatContainer"></div>
 
-    <div class="input-container">
+    <div class="input-container" id="inputContainer">
       <div class="input-wrapper">
         <input 
           type="text" 
@@ -250,32 +263,56 @@
     const sendBtn = document.getElementById('sendBtn');
     const chatContainer = document.getElementById('chatContainer');
     const appViewport = document.getElementById('appViewport');
+    const inputContainer = document.getElementById('inputContainer');
+
+    let botBrain = {};
+
+    // Caricamento del cervello (cervello/risposte.json)
+    fetch('cervello/risposte.json')
+      .then(res => res.json())
+      .then(data => { botBrain = data; })
+      .catch(err => console.log('Errore caricamento cervello:', err));
 
     function handleSend() {
       const text = userInput.value.trim();
       if (text !== "") {
+        // Messaggio Utente (Destra)
         const msgDiv = document.createElement('div');
         msgDiv.className = 'user-message';
         msgDiv.textContent = text;
-        
         chatContainer.appendChild(msgDiv);
+
         userInput.value = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Risposta di Renji (Sinistra)
+        setTimeout(() => {
+          const lowerText = text.toLowerCase();
+          let replyText = "Non ho capito bene, puoi ripetere?";
+          
+          for (let key in botBrain) {
+            if (lowerText.includes(key)) {
+              replyText = botBrain[key];
+              break;
+            }
+          }
+
+          const renjiDiv = document.createElement('div');
+          renjiDiv.className = 'renji-message';
+          renjiDiv.textContent = replyText;
+          chatContainer.appendChild(renjiDiv);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 500);
       }
     }
 
-    // Impedisce al bottone di togliere il focus dal campo di testo (mantiene la tastiera aperta)
-    sendBtn.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-    });
-
+    sendBtn.addEventListener('mousedown', (e) => e.preventDefault());
     sendBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       handleSend();
       userInput.focus();
     });
-
-    sendBtn.addEventListener('click', (e) => {
+    sendBtn.addEventListener('click', () => {
       handleSend();
       userInput.focus();
     });
@@ -286,6 +323,28 @@
         handleSend();
       }
     });
+
+    /* GESTIONE SWIPE PER ABBASSARE LA TASTIERA ED EVITARE SPOSTAMENTI */
+    let startY = 0;
+
+    chatContainer.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    chatContainer.addEventListener('touchmove', (e) => {
+      const currentY = e.touches[0].clientY;
+      const diffY = currentY - startY;
+
+      // Se si trascina verso il basso, chiudi la tastiera
+      if (diffY > 40) {
+        userInput.blur();
+      }
+    }, { passive: true });
+
+    // Blocca il trascinamento dell'input container verso l'alto
+    inputContainer.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
 
     if (window.visualViewport) {
       const updateHeight = () => {
@@ -298,10 +357,6 @@
       window.visualViewport.addEventListener('resize', updateHeight);
       window.visualViewport.addEventListener('scroll', updateHeight);
     }
-
-    document.addEventListener('scroll', () => {
-      window.scrollTo(0, 0);
-    });
   </script>
 
 </body>
