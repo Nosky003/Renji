@@ -1,4 +1,4 @@
-name: Build iOS IPA
+Name: Build iOS IPA
 
 on:
   push:
@@ -32,6 +32,19 @@ jobs:
           npx cap init Renji com.renji.app --web-dir www
           npx cap add ios
           npx cap sync ios
+
+      - name: Hide iOS Keyboard Toolbar (Remove Accessory View)
+        run: |
+          cat << 'EOF' >> ios/App/App/AppDelegate.swift
+
+          import WebKit
+
+          extension WKWebView {
+              override open var inputAccessoryView: UIView? {
+                  return nil
+              }
+          }
+          EOF
 
       - name: Build Xcode Project
         run: |
