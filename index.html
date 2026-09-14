@@ -20,10 +20,11 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Nasconde completamente le scrollbar della pagina principale */
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow: hidden !important;
       position: fixed;
       top: 0;
       left: 0;
@@ -31,6 +32,15 @@
       bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -ms-overflow-style: none;  /* IE/Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
+    /* Nasconde scrollbar su Webkit (Safari/Chrome) per body ed elementi globali */
+    html::-webkit-scrollbar, body::-webkit-scrollbar, .app-viewport::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
 
     /* Container principale fisso */
@@ -104,7 +114,7 @@
       border-radius: 50%;
     }
 
-    /* Area Chat unibody */
+    /* Area Chat (Unica area in cui la scrollbar o lo scorrimento è consentito) */
     .chat-container {
       flex: 1;
       padding: 16px;
@@ -129,7 +139,7 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Input Container senza linea superiore */
+    /* Input Container senza bordi né scrollbar */
     .input-container {
       padding: 8px 16px;
       padding-bottom: max(8px, env(safe-area-inset-bottom));
@@ -192,7 +202,6 @@
 <body>
 
   <div class="app-viewport" id="appViewport">
-    <!-- Top Bar -->
     <div class="top-bar">
       <div class="icon-btn">
         <div class="lines-icon">
@@ -212,10 +221,8 @@
       </div>
     </div>
 
-    <!-- Area Chat -->
     <div class="chat-container" id="chatContainer"></div>
 
-    <!-- Input Container -->
     <div class="input-container">
       <div class="input-wrapper">
         <input 
@@ -257,7 +264,21 @@
       }
     }
 
-    sendBtn.addEventListener('click', handleSend);
+    // Impedisce al bottone di togliere il focus dal campo di testo (mantiene la tastiera aperta)
+    sendBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+    });
+
+    sendBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      handleSend();
+      userInput.focus();
+    });
+
+    sendBtn.addEventListener('click', (e) => {
+      handleSend();
+      userInput.focus();
+    });
 
     userInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
