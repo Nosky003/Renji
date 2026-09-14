@@ -48,7 +48,7 @@
       color: #000000;
     }
 
-    /* Pulsanti circolari */
+    /* Pulsanti circolari in alto */
     .icon-btn {
       width: 36px;
       height: 36px;
@@ -111,16 +111,24 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Barra di input inferiore */
+    /* Contenitore input inferiore */
     .input-container {
       padding: 12px 16px;
       padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
       background-color: #ffffff;
     }
 
+    /* Wrapper per posizionare il pulsante all'interno del campo di testo */
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
     .input-box {
       width: 100%;
-      padding: 14px 20px;
+      padding: 12px 48px 12px 20px; /* Spazio a destra per il pulsante d'invio */
       border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
@@ -133,6 +141,34 @@
 
     .input-box::placeholder {
       color: #8e8e93;
+    }
+
+    /* Pulsante d'invio circolare nero con icona dell'aereo */
+    .send-btn {
+      position: absolute;
+      right: 6px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background-color: #000000;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .send-btn:active {
+      background-color: #333333;
+    }
+
+    .send-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: #ffffff;
+      transform: translateX(-1px) translateY(1px); /* Allineamento visivo dell'aeroplanino */
     }
   </style>
 </head>
@@ -161,17 +197,24 @@
   <!-- Area dei messaggi inviati -->
   <div class="chat-container" id="chatContainer"></div>
 
-  <!-- Campo di input inferiore -->
+  <!-- Campo di input inferiore con bottone d'invio integrato -->
   <div class="input-container">
     <form id="chatForm" onsubmit="sendMessage(event)">
-      <input 
-        type="text" 
-        id="userInput" 
-        class="input-box" 
-        placeholder="Chiedi a Renji" 
-        autocomplete="off" 
-        enterkeyhint="send"
-      />
+      <div class="input-wrapper">
+        <input 
+          type="text" 
+          id="userInput" 
+          class="input-box" 
+          placeholder="Chiedi a Renji" 
+          autocomplete="off" 
+          enterkeyhint="send"
+        />
+        <button type="submit" class="send-btn" aria-label="Invia">
+          <svg viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
     </form>
   </div>
 
@@ -195,7 +238,7 @@
         // Pulisce il campo di testo
         input.value = "";
         
-        // Scorri verso il basso
+        // Scorri automaticamente verso il basso
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     }
