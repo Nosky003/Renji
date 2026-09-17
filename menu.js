@@ -1,4 +1,3 @@
-// menu.js - Gestione del menu laterale
 document.addEventListener('DOMContentLoaded', () => {
   const leftBtn = document.getElementById('leftMenuBtn');
   const sideMenu = document.getElementById('sideMenu');
@@ -7,34 +6,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!leftBtn || !sideMenu || !overlay) return;
 
-  function openMenu(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
+  function toggleMenu(open) {
+    if (open) {
+      sideMenu.classList.add('active');
+      overlay.classList.add('active');
+    } else {
+      sideMenu.classList.remove('active');
+      overlay.classList.remove('active');
     }
-    sideMenu.classList.add('active');
-    overlay.classList.add('active');
   }
 
-  function closeMenu(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    sideMenu.classList.remove('active');
-    overlay.classList.remove('active');
-  }
+  const handleOpen = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleMenu(true);
+  };
 
-  // Eventi di tocco e click sul pulsante cerchio in alto a sinistra
-  leftBtn.addEventListener('touchstart', openMenu, { passive: false });
-  leftBtn.addEventListener('click', openMenu);
+  const handleClose = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleMenu(false);
+  };
 
-  // Chiusura al tocco sull'overlay o sul pulsante (X)
-  overlay.addEventListener('touchstart', closeMenu, { passive: false });
-  overlay.addEventListener('click', closeMenu);
+  leftBtn.addEventListener('touchstart', handleOpen, { capture: true, passive: false });
+  leftBtn.addEventListener('click', handleOpen, { capture: true });
+
+  overlay.addEventListener('touchstart', handleClose, { capture: true, passive: false });
+  overlay.addEventListener('click', handleClose, { capture: true });
 
   if (closeBtn) {
-    closeBtn.addEventListener('touchstart', closeMenu, { passive: false });
-    closeBtn.addEventListener('click', closeMenu);
+    closeBtn.addEventListener('touchstart', handleClose, { capture: true, passive: false });
+    closeBtn.addEventListener('click', handleClose, { capture: true });
   }
 });
