@@ -1,9 +1,9 @@
-// menu.js - Gestione menu laterale a scorrimento da sinistra verso destra
-
+// menu.js - Gestione menu laterale
 document.addEventListener('DOMContentLoaded', () => {
-  const menuBtn = document.querySelector('.top-bar .icon-btn:first-child');
+  const menuBtn = document.getElementById('leftMenuBtn');
   
-  // Crea la struttura del menu e dell'overlay
+  if (document.querySelector('.side-menu')) return;
+
   const overlay = document.createElement('div');
   overlay.className = 'menu-overlay';
 
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   sideMenu.innerHTML = `
     <div class="side-menu-header">
       <h2>Menu</h2>
-      <button class="close-menu-btn">&times;</button>
+      <button class="close-menu-btn" type="button">&times;</button>
     </div>
     <div class="side-menu-content">
       <ul>
@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (menuBtn) {
     menuBtn.addEventListener('click', openMenu);
+    menuBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      openMenu();
+    });
   }
 
   overlay.addEventListener('click', closeMenu);
