@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Renji</title>
   
   <link rel="manifest" href="manifest.json">
@@ -23,7 +23,7 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden !important;
+      overflow: hidden;
       position: fixed;
       top: 0;
       left: 0;
@@ -31,14 +31,16 @@
       bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overscroll-behavior: none !important;
-      -webkit-overscroll-behavior: none !important;
+      overscroll-behavior: none;
+      -webkit-overscroll-behavior: none;
     }
 
     .app-viewport {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
+      right: 0;
+      bottom: 0;
       width: 100%;
       height: 100%;
       display: flex;
@@ -82,7 +84,7 @@
       z-index: 20;
     }
 
-    .lines-icon, .lines-icon span {
+    .lines-icon, .lines-icon span, .dots-icon, .dots-icon span {
       pointer-events: none !important;
     }
 
@@ -97,10 +99,6 @@
       height: 2px;
       background-color: #000000;
       border-radius: 1px;
-    }
-
-    .dots-icon, .dots-icon span {
-      pointer-events: none !important;
     }
 
     .dots-icon {
@@ -151,7 +149,7 @@
       word-wrap: break-word;
     }
 
-    /* Input Container dinamico */
+    /* Input Container */
     .input-container {
       padding-top: 6px;
       padding-left: 16px;
@@ -160,11 +158,7 @@
       background-color: #ffffff;
       flex-shrink: 0;
       border-top: none;
-      transition: padding-bottom 0.1s ease-out;
-    }
-
-    .input-container.keyboard-open {
-      padding-bottom: 4px !important;
+      will-change: transform;
     }
 
     .input-wrapper {
@@ -379,7 +373,6 @@
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const chatContainer = document.getElementById('chatContainer');
-    const appViewport = document.getElementById('appViewport');
     const inputContainer = document.getElementById('inputContainer');
 
     const botBrain = {
@@ -462,25 +455,31 @@
     chatContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
     chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
 
+    // Gestione stabile del riposizionamento della tastiera
     if (window.visualViewport) {
-      const updateLayout = () => {
-        const isKeyboardVisible = window.visualViewport.height < window.innerHeight - 100;
-        
-        appViewport.style.height = `${window.visualViewport.height}px`;
-        
-        if (isKeyboardVisible) {
-          inputContainer.classList.add('keyboard-open');
-        } else {
-          inputContainer.classList.remove('keyboard-open');
-        }
-
+      const onVisualViewportChange = () => {
+        // Previene lo scroll scorretto della finestra principale di iOS
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
+
+        const keyboardHeight = window.innerHeight - window.visualViewport.height;
+        
+        if (keyboardHeight > 100) {
+          // Quando la tastiera è aperta, trasliamo solo il blocco input verso l'alto
+          const offset = keyboardHeight - 20; 
+          inputContainer.style.transform = `translateY(-${offset}px)`;
+          chatContainer.style.paddingBottom = `${offset}px`;
+        } else {
+          // Quando si chiude, ripristiniamo la posizione originale
+          inputContainer.style.transform = 'translateY(0px)';
+          chatContainer.style.paddingBottom = '16px';
+        }
+        
         chatContainer.scrollTop = chatContainer.scrollHeight;
       };
 
-      window.visualViewport.addEventListener('resize', updateLayout);
-      window.visualViewport.addEventListener('scroll', updateLayout);
+      window.visualViewport.addEventListener('resize', onVisualViewportChange);
+      window.visualViewport.addEventListener('scroll', onVisualViewportChange);
     }
   </script>
 
