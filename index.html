@@ -23,7 +23,7 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow: hidden !important;
       position: fixed;
       top: 0;
       left: 0;
@@ -31,10 +31,11 @@
       bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overscroll-behavior: none;
-      -webkit-overscroll-behavior: none;
+      overscroll-behavior: none !important;
+      -webkit-overscroll-behavior: none !important;
     }
 
+    /* Struttura principale bloccata */
     .app-viewport {
       position: fixed;
       top: 0;
@@ -48,8 +49,12 @@
       overflow: hidden;
     }
 
-    /* Top Bar */
+    /* Top Bar rigidamente ancorata in alto */
     .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -59,8 +64,8 @@
       padding-bottom: 12px;
       border-bottom: 1px solid #e0e0e0;
       background-color: #ffffff;
-      flex-shrink: 0;
-      z-index: 10;
+      height: calc(env(safe-area-inset-top) + 56px);
+      z-index: 100;
     }
 
     .title {
@@ -115,7 +120,11 @@
 
     /* Area Chat */
     .chat-container {
-      flex: 1;
+      position: absolute;
+      top: calc(env(safe-area-inset-top) + 56px);
+      left: 0;
+      right: 0;
+      bottom: calc(env(safe-area-inset-bottom) + 60px);
       padding: 16px;
       overflow-y: auto;
       display: flex;
@@ -149,15 +158,18 @@
       word-wrap: break-word;
     }
 
-    /* Input Container */
+    /* Input Container ancorato fixed */
     .input-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       padding-top: 6px;
       padding-left: 16px;
       padding-right: 16px;
       padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
       background-color: #ffffff;
-      flex-shrink: 0;
-      border-top: none;
+      z-index: 90;
       will-change: transform;
     }
 
@@ -437,49 +449,36 @@
       }
     });
 
-    let startY = 0;
-
-    const handleTouchStart = (e) => {
-      startY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e) => {
-      const currentY = e.touches[0].clientY;
-      if (currentY - startY > 2 && document.activeElement === userInput) {
-        userInput.blur();
+    // Blocco dello scroll indesiderato della pagina di iOS
+    document.addEventListener('touchmove', (e) => {
+      if (!e.target.closest('#chatContainer')) {
+        e.preventDefault();
       }
-    };
+    }, { passive: false });
 
-    inputContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    inputContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-    chatContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-
-    // Gestione stabile del riposizionamento della tastiera
+    // Gestione posizionamento dell'input rispetto alla tastiera
     if (window.visualViewport) {
-      const onVisualViewportChange = () => {
-        // Previene lo scroll scorretto della finestra principale di iOS
-        window.scrollTo(0, 0);
-        document.body.scrollTop = 0;
-
+      const updatePosition = () => {
+        window.scrollTo(0, 0); // Forza lo scroll generale sempre a 0
+        
         const keyboardHeight = window.innerHeight - window.visualViewport.height;
         
         if (keyboardHeight > 100) {
-          // Quando la tastiera è aperta, trasliamo solo il blocco input verso l'alto
-          const offset = keyboardHeight - 20; 
+          // Solleva l'input lasciando 6px esatti sopra la tastiera
+          const offset = keyboardHeight - window.visualViewport.offsetTop + 6;
           inputContainer.style.transform = `translateY(-${offset}px)`;
-          chatContainer.style.paddingBottom = `${offset}px`;
+          inputContainer.style.paddingBottom = '4px';
         } else {
-          // Quando si chiude, ripristiniamo la posizione originale
+          // Posizione iniziale
           inputContainer.style.transform = 'translateY(0px)';
-          chatContainer.style.paddingBottom = '16px';
+          inputContainer.style.paddingBottom = 'calc(env(safe-area-inset-bottom) + 8px)';
         }
         
         chatContainer.scrollTop = chatContainer.scrollHeight;
       };
 
-      window.visualViewport.addEventListener('resize', onVisualViewportChange);
-      window.visualViewport.addEventListener('scroll', onVisualViewportChange);
+      window.visualViewport.addEventListener('resize', updatePosition);
+      window.visualViewport.addEventListener('scroll', updatePosition);
     }
   </script>
 
