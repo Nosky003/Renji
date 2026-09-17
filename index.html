@@ -78,13 +78,18 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      position: relative;
+      z-index: 20;
+    }
+
+    .lines-icon, .lines-icon span {
+      pointer-events: none !important;
     }
 
     .lines-icon {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      pointer-events: none;
     }
 
     .lines-icon span {
@@ -92,13 +97,15 @@
       height: 2px;
       background-color: #000000;
       border-radius: 1px;
-      pointer-events: none;
+    }
+
+    .dots-icon, .dots-icon span {
+      pointer-events: none !important;
     }
 
     .dots-icon {
       display: flex;
       gap: 3px;
-      pointer-events: none;
     }
 
     .dots-icon span {
@@ -106,7 +113,6 @@
       height: 4px;
       background-color: #000000;
       border-radius: 50%;
-      pointer-events: none;
     }
 
     /* Area Chat */
@@ -145,12 +151,20 @@
       word-wrap: break-word;
     }
 
-    /* Input Container ravvicinato alla tastiera */
+    /* Input Container dinamico */
     .input-container {
-      padding: 4px 16px 4px 16px;
+      padding-top: 6px;
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
       background-color: #ffffff;
       flex-shrink: 0;
       border-top: none;
+      transition: padding-bottom 0.1s ease-out;
+    }
+
+    .input-container.keyboard-open {
+      padding-bottom: 4px !important;
     }
 
     .input-wrapper {
@@ -293,7 +307,6 @@
 </head>
 <body>
 
-  <!-- Overlay e Side Menu direttamente nel DOM -->
   <div class="menu-overlay" id="menuOverlay"></div>
   <div class="side-menu" id="sideMenu">
     <div class="side-menu-header">
@@ -450,15 +463,24 @@
     chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     if (window.visualViewport) {
-      const updateHeight = () => {
+      const updateLayout = () => {
+        const isKeyboardVisible = window.visualViewport.height < window.innerHeight - 100;
+        
         appViewport.style.height = `${window.visualViewport.height}px`;
+        
+        if (isKeyboardVisible) {
+          inputContainer.classList.add('keyboard-open');
+        } else {
+          inputContainer.classList.remove('keyboard-open');
+        }
+
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
         chatContainer.scrollTop = chatContainer.scrollHeight;
       };
 
-      window.visualViewport.addEventListener('resize', updateHeight);
-      window.visualViewport.addEventListener('scroll', updateHeight);
+      window.visualViewport.addEventListener('resize', updateLayout);
+      window.visualViewport.addEventListener('scroll', updateLayout);
     }
   </script>
 
