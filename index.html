@@ -84,6 +84,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      pointer-events: none;
     }
 
     .lines-icon span {
@@ -91,11 +92,13 @@
       height: 2px;
       background-color: #000000;
       border-radius: 1px;
+      pointer-events: none;
     }
 
     .dots-icon {
       display: flex;
       gap: 3px;
+      pointer-events: none;
     }
 
     .dots-icon span {
@@ -103,6 +106,7 @@
       height: 4px;
       background-color: #000000;
       border-radius: 50%;
+      pointer-events: none;
     }
 
     /* Area Chat */
@@ -130,7 +134,6 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Risposte di Renji senza cerchio/sfondo */
     .renji-message {
       align-self: flex-start;
       background-color: transparent;
@@ -142,10 +145,9 @@
       word-wrap: break-word;
     }
 
-    /* Input Container */
+    /* Input Container ravvicinato alla tastiera */
     .input-container {
-      padding: 8px 16px;
-      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding: 4px 16px 4px 16px;
       background-color: #ffffff;
       flex-shrink: 0;
       border-top: none;
@@ -161,7 +163,7 @@
     .input-box {
       width: 100%;
       height: 44px;
-      padding: 10px 84px 10px 20px; /* Spazio a destra per microfono e aeroplanino */
+      padding: 10px 84px 10px 20px;
       border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
@@ -177,7 +179,6 @@
       color: #8e8e93;
     }
 
-    /* Microfono senza cerchio a sinistra dell'aeroplanino */
     .mic-btn {
       position: absolute;
       right: 44px;
@@ -198,7 +199,6 @@
       fill: #000000;
     }
 
-    /* Pulsante aeroplanino */
     .send-btn {
       position: absolute;
       right: 5px;
@@ -231,7 +231,7 @@
       height: 100%;
       background-color: #ffffff;
       box-shadow: 2px 0 12px rgba(0,0,0,0.15);
-      z-index: 100;
+      z-index: 1000;
       transition: transform 0.3s ease-in-out;
       display: flex;
       flex-direction: column;
@@ -248,7 +248,7 @@
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.3);
-      z-index: 99;
+      z-index: 999;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease-in-out;
@@ -292,6 +292,22 @@
   </style>
 </head>
 <body>
+
+  <!-- Overlay e Side Menu direttamente nel DOM -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <h2 style="font-size: 1.2rem; font-weight: 700;">Menu</h2>
+      <button class="close-menu-btn" id="closeMenuBtn" type="button">&times;</button>
+    </div>
+    <div class="side-menu-content">
+      <ul>
+        <li>Nuova Chat</li>
+        <li>Impostazioni</li>
+        <li>Info su Renji</li>
+      </ul>
+    </div>
+  </div>
 
   <div class="app-viewport" id="appViewport">
     <div class="top-bar">
@@ -353,7 +369,6 @@
     const appViewport = document.getElementById('appViewport');
     const inputContainer = document.getElementById('inputContainer');
 
-    // Cervello locale integrato + fallback di sicurezza
     const botBrain = {
       "ciao": "Ciao! Come posso aiutarti oggi?",
       "come stai": "Sto benissimo, grazie! Tu come stai?",
@@ -362,7 +377,6 @@
       "grazie": "Prego! Sono sempre qui per aiutarti."
     };
 
-    // Tenta comunque il caricamento dinamico da file
     fetch('cervello/risposte.json')
       .then(res => res.json())
       .then(data => { Object.assign(botBrain, data); })
@@ -371,7 +385,6 @@
     function handleSend() {
       const text = userInput.value.trim();
       if (text !== "") {
-        // Messaggio Utente
         const msgDiv = document.createElement('div');
         msgDiv.className = 'user-message';
         msgDiv.textContent = text;
@@ -380,7 +393,6 @@
         userInput.value = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        // Risposta di Renji
         setTimeout(() => {
           const lowerText = text.toLowerCase();
           let replyText = "Non ho capito bene, puoi ripetere?";
@@ -419,7 +431,6 @@
       }
     });
 
-    /* SPARIZIONE ISTANTANEA DELLA TASTIERA ALLA MINIMA SCIVOLATA VERSO IL BASSO */
     let startY = 0;
 
     const handleTouchStart = (e) => {
@@ -428,7 +439,6 @@
 
     const handleTouchMove = (e) => {
       const currentY = e.touches[0].clientY;
-      // Appena si sposta di appena 2px verso il basso, chiude subito la tastiera
       if (currentY - startY > 2 && document.activeElement === userInput) {
         userInput.blur();
       }
