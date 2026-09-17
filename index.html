@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Renji</title>
   
   <link rel="manifest" href="manifest.json">
@@ -23,12 +23,16 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow: hidden !important;
       position: fixed;
       top: 0;
       left: 0;
+      right: 0;
+      bottom: 0;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overscroll-behavior: none !important;
+      -webkit-overscroll-behavior: none !important;
     }
 
     .app-viewport {
@@ -110,6 +114,7 @@
       flex-direction: column;
       gap: 12px;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .user-message {
@@ -125,6 +130,7 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
     }
 
+    /* Risposte di Renji senza cerchio/sfondo */
     .renji-message {
       align-self: flex-start;
       background-color: transparent;
@@ -136,17 +142,13 @@
       word-wrap: break-word;
     }
 
-    /* Input Container fissa sopra la tastiera */
+    /* Input Container */
     .input-container {
-      padding: 6px 16px;
-      padding-bottom: max(6px, env(safe-area-inset-bottom));
+      padding: 8px 16px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
       background-color: #ffffff;
       flex-shrink: 0;
-      border-top: 1px solid #f0f0f0;
-    }
-
-    .keyboard-open .input-container {
-      padding-bottom: 6px;
+      border-top: none;
     }
 
     .input-wrapper {
@@ -158,9 +160,9 @@
 
     .input-box {
       width: 100%;
-      height: 42px;
-      padding: 8px 84px 8px 16px;
-      border-radius: 24px;
+      height: 44px;
+      padding: 10px 84px 10px 20px; /* Spazio a destra per microfono e aeroplanino */
+      border-radius: 28px;
       border: 1px solid #e0e0e0;
       outline: none;
       font-size: 16px;
@@ -171,6 +173,11 @@
       -webkit-appearance: none;
     }
 
+    .input-box::placeholder {
+      color: #8e8e93;
+    }
+
+    /* Microfono senza cerchio a sinistra dell'aeroplanino */
     .mic-btn {
       position: absolute;
       right: 44px;
@@ -191,6 +198,7 @@
       fill: #000000;
     }
 
+    /* Pulsante aeroplanino */
     .send-btn {
       position: absolute;
       right: 5px;
@@ -204,12 +212,14 @@
       justify-content: center;
       cursor: pointer;
       padding: 0;
+      box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .send-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 19px;
+      height: 19px;
       fill: #000000;
+      display: block;
     }
 
     /* Stili Menu Laterale */
@@ -221,8 +231,8 @@
       height: 100%;
       background-color: #ffffff;
       box-shadow: 2px 0 12px rgba(0,0,0,0.15);
-      z-index: 1000;
-      transition: transform 0.25s ease-out;
+      z-index: 100;
+      transition: transform 0.3s ease-in-out;
       display: flex;
       flex-direction: column;
     }
@@ -237,11 +247,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.4);
-      z-index: 999;
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 99;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease-out;
+      transition: opacity 0.3s ease-in-out;
     }
 
     .menu-overlay.active {
@@ -260,8 +270,7 @@
     .close-menu-btn {
       background: none;
       border: none;
-      font-size: 28px;
-      line-height: 1;
+      font-size: 24px;
       cursor: pointer;
     }
 
@@ -278,6 +287,7 @@
       border-bottom: 1px solid #f0f0f0;
       font-size: 16px;
       font-weight: 500;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -285,7 +295,7 @@
 
   <div class="app-viewport" id="appViewport">
     <div class="top-bar">
-      <div class="icon-btn" id="leftMenuBtn" role="button" aria-label="Menu">
+      <div class="icon-btn" id="leftMenuBtn">
         <div class="lines-icon">
           <span></span>
           <span></span>
@@ -341,50 +351,67 @@
     const sendBtn = document.getElementById('sendBtn');
     const chatContainer = document.getElementById('chatContainer');
     const appViewport = document.getElementById('appViewport');
+    const inputContainer = document.getElementById('inputContainer');
 
+    // Cervello locale integrato + fallback di sicurezza
     const botBrain = {
       "ciao": "Ciao! Come posso aiutarti oggi?",
       "come stai": "Sto benissimo, grazie! Tu come stai?",
-      "chi sei": "Sono Renji, il tuo assistente personale!"
+      "chi sei": "Sono Renji, il tuo assistente personale!",
+      "cosa puoi fare": "Posso rispondere ai tuoi messaggi e aiutarti nelle tue attività quotidiane.",
+      "grazie": "Prego! Sono sempre qui per aiutarti."
     };
 
+    // Tenta comunque il caricamento dinamico da file
     fetch('cervello/risposte.json')
       .then(res => res.json())
-      .then(data => Object.assign(botBrain, data))
-      .catch(() => {});
+      .then(data => { Object.assign(botBrain, data); })
+      .catch(err => console.log('Utilizzo risposte predefinite'));
 
     function handleSend() {
       const text = userInput.value.trim();
-      if (!text) return;
+      if (text !== "") {
+        // Messaggio Utente
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'user-message';
+        msgDiv.textContent = text;
+        chatContainer.appendChild(msgDiv);
 
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'user-message';
-      msgDiv.textContent = text;
-      chatContainer.appendChild(msgDiv);
-
-      userInput.value = "";
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-
-      setTimeout(() => {
-        const lowerText = text.toLowerCase();
-        let replyText = "Non ho capito bene, puoi ripetere?";
-        
-        for (let key in botBrain) {
-          if (lowerText.includes(key)) {
-            replyText = botBrain[key];
-            break;
-          }
-        }
-
-        const renjiDiv = document.createElement('div');
-        renjiDiv.className = 'renji-message';
-        renjiDiv.textContent = replyText;
-        chatContainer.appendChild(renjiDiv);
+        userInput.value = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
-      }, 300);
+
+        // Risposta di Renji
+        setTimeout(() => {
+          const lowerText = text.toLowerCase();
+          let replyText = "Non ho capito bene, puoi ripetere?";
+          
+          for (let key in botBrain) {
+            if (lowerText.includes(key)) {
+              replyText = botBrain[key];
+              break;
+            }
+          }
+
+          const renjiDiv = document.createElement('div');
+          renjiDiv.className = 'renji-message';
+          renjiDiv.textContent = replyText;
+          chatContainer.appendChild(renjiDiv);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 300);
+      }
     }
 
-    sendBtn.addEventListener('click', handleSend);
+    sendBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    sendBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      handleSend();
+      userInput.focus();
+    });
+    sendBtn.addEventListener('click', () => {
+      handleSend();
+      userInput.focus();
+    });
+
     userInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -392,37 +419,37 @@
       }
     });
 
-    // Gestione fluida della tastiera con VisualViewport
+    /* SPARIZIONE ISTANTANEA DELLA TASTIERA ALLA MINIMA SCIVOLATA VERSO IL BASSO */
+    let startY = 0;
+
+    const handleTouchStart = (e) => {
+      startY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      const currentY = e.touches[0].clientY;
+      // Appena si sposta di appena 2px verso il basso, chiude subito la tastiera
+      if (currentY - startY > 2 && document.activeElement === userInput) {
+        userInput.blur();
+      }
+    };
+
+    inputContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+    inputContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+    chatContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+    chatContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+
     if (window.visualViewport) {
-      const adjustViewport = () => {
-        const viewportHeight = window.visualViewport.height;
-        appViewport.style.height = `${viewportHeight}px`;
-        
-        if (window.innerHeight - viewportHeight > 150) {
-          document.body.classList.add('keyboard-open');
-        } else {
-          document.body.classList.remove('keyboard-open');
-        }
-        
+      const updateHeight = () => {
+        appViewport.style.height = `${window.visualViewport.height}px`;
         window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
         chatContainer.scrollTop = chatContainer.scrollHeight;
       };
 
-      window.visualViewport.addEventListener('resize', adjustViewport);
-      window.visualViewport.addEventListener('scroll', adjustViewport);
+      window.visualViewport.addEventListener('resize', updateHeight);
+      window.visualViewport.addEventListener('scroll', updateHeight);
     }
-
-    // Chiusura immediata tastiera al trascinamento della chat
-    let startY = 0;
-    chatContainer.addEventListener('touchstart', (e) => {
-      startY = e.touches[0].clientY;
-    }, { passive: true });
-
-    chatContainer.addEventListener('touchmove', (e) => {
-      if (e.touches[0].clientY - startY > 5 && document.activeElement === userInput) {
-        userInput.blur();
-      }
-    }, { passive: true });
   </script>
 
 </body>
