@@ -1,38 +1,12 @@
-// menu.js - Gestione separata del menu e del pannello laterale
+// menu.js - Gestione del menu laterale
 document.addEventListener('DOMContentLoaded', () => {
   const leftBtn = document.getElementById('leftMenuBtn');
-  if (!leftBtn) return;
+  const sideMenu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
+  const closeBtn = document.getElementById('closeMenuBtn');
 
-  // 1. Crea Overlay se non esiste
-  let overlay = document.querySelector('.menu-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.className = 'menu-overlay';
-    document.body.appendChild(overlay);
-  }
+  if (!leftBtn || !sideMenu || !overlay) return;
 
-  // 2. Crea Side Menu se non esiste
-  let sideMenu = document.querySelector('.side-menu');
-  if (!sideMenu) {
-    sideMenu = document.createElement('div');
-    sideMenu.className = 'side-menu';
-    sideMenu.innerHTML = `
-      <div class="side-menu-header">
-        <h2 style="font-size: 1.2rem; font-weight: 700;">Menu</h2>
-        <button class="close-menu-btn" type="button">&times;</button>
-      </div>
-      <div class="side-menu-content">
-        <ul>
-          <li>Nuova Chat</li>
-          <li>Impostazioni</li>
-          <li>Info su Renji</li>
-        </ul>
-      </div>
-    `;
-    document.body.appendChild(sideMenu);
-  }
-
-  // Funzioni per aprire/chiudere
   function openMenu(e) {
     if (e) {
       e.preventDefault();
@@ -51,18 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.classList.remove('active');
   }
 
-  // Event Listener sul pulsante in alto a sinistra
-  leftBtn.addEventListener('click', openMenu);
+  // Eventi di tocco e click sul pulsante cerchio in alto a sinistra
   leftBtn.addEventListener('touchstart', openMenu, { passive: false });
+  leftBtn.addEventListener('click', openMenu);
 
-  // Event Listener per chiudere cliccando sull'overlay
-  overlay.addEventListener('click', closeMenu);
+  // Chiusura al tocco sull'overlay o sul pulsante (X)
   overlay.addEventListener('touchstart', closeMenu, { passive: false });
+  overlay.addEventListener('click', closeMenu);
 
-  // Event Listener per il pulsante di chiusura (x)
-  const closeBtn = sideMenu.querySelector('.close-menu-btn');
   if (closeBtn) {
-    closeBtn.addEventListener('click', closeMenu);
     closeBtn.addEventListener('touchstart', closeMenu, { passive: false });
+    closeBtn.addEventListener('click', closeMenu);
   }
 });
