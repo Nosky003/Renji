@@ -20,27 +20,22 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* ELIMINA OGNI TIPO DI SCROLL SULLA PAGINA GLOBALE */
+    /* BLOCCA LA PAGINA PRINCIPALE */
     html, body {
-      width: 100vw !important;
-      height: 100vh !important;
-      max-width: 100vw !important;
-      max-height: 100vh !important;
+      width: 100% !important;
+      height: 100% !important;
       overflow: hidden !important;
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overscroll-behavior: none !important;
       -webkit-overscroll-behavior: none !important;
-      touch-action: none;
     }
 
     .app-viewport {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
@@ -50,7 +45,7 @@
       overflow: hidden;
     }
 
-    /* Top Bar rigidamente bloccata in alto */
+    /* Top Bar bloccata */
     .top-bar {
       position: absolute;
       top: 0;
@@ -119,7 +114,7 @@
       border-radius: 50%;
     }
 
-    /* UNICA AREA CON SCROLLBAR CONSENTITA */
+    /* AREA CHAT: L'UNICA CON SCROLL SCROLLBAR */
     .chat-container {
       position: absolute;
       top: calc(env(safe-area-inset-top) + 56px);
@@ -133,7 +128,6 @@
       gap: 12px;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-      touch-action: pan-y;
     }
 
     .user-message {
@@ -160,9 +154,9 @@
       word-wrap: break-word;
     }
 
-    /* Input Container ancorato alla tastiera */
+    /* Contenitore Input Ancorato */
     .input-container {
-      position: fixed;
+      position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
@@ -172,8 +166,7 @@
       padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
       background-color: #ffffff;
       z-index: 90;
-      will-change: transform;
-      touch-action: pan-y;
+      transition: transform 0.15s ease-out;
     }
 
     .input-wrapper {
@@ -245,7 +238,6 @@
       display: block;
     }
 
-    /* Stili Menu Laterale */
     .side-menu {
       position: fixed;
       top: 0;
@@ -452,64 +444,53 @@
       }
     });
 
-    // 1. BLOCCO ASSOLUTO SCROLL SULLA PAGINA GLOBALE
+    // Blocco assoluto dello scroll della pagina
     document.addEventListener('touchmove', (e) => {
       if (!e.target.closest('#chatContainer')) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    // 2. CHIUSURA TASTIERA TRASCINANDO L'INPUT O LA CHAT VERSO IL BASSO
+    // CHIUSURA TASTIERA: Esclusivamente trascinando il dito verso il basso sull'area dell'input
     let startY = 0;
 
-    const handleTouchStart = (e) => {
+    inputContainer.addEventListener('touchstart', (e) => {
       startY = e.touches[0].clientY;
-    };
+    }, { passive: true });
 
-    const handleTouchMove = (e) => {
+    inputContainer.addEventListener('touchmove', (e) => {
       const currentY = e.touches[0].clientY;
       const diffY = currentY - startY;
 
-      // Se si trascina verso il basso di oltre 10px quando la tastiera è aperta
-      if (diffY > 10 && document.activeElement === userInput) {
+      if (diffY > 12 && document.activeElement === userInput) {
         userInput.blur();
-      }
-    };
-
-    inputContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    inputContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-    
-    // Si attiva solo se la chat si trova già in cima e si trascina verso il basso
-    chatContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    chatContainer.addEventListener('touchmove', (e) => {
-      if (chatContainer.scrollTop === 0) {
-        handleTouchMove(e);
       }
     }, { passive: true });
 
-    // 3. POSIZIONAMENTO RIGIDO INPUT SOPRA LA TASTIERA SENZA SCROLL DI PAGINA
+    // CALCOLO POSIZIONE INPUT SOPRA LA TASTIERA
     if (window.visualViewport) {
-      const updatePosition = () => {
-        // Azzera costantemente qualsiasi tentativo di scroll di Safari
+      const adjustInput = () => {
         window.scrollTo(0, 0);
-        document.body.scrollTop = 0;
         
-        const keyboardHeight = window.innerHeight - window.visualViewport.height;
-        
+        const vpHeight = window.visualViewport.height;
+        const winHeight = window.innerHeight;
+        const keyboardHeight = winHeight - vpHeight;
+
         if (keyboardHeight > 100) {
-          const offset = keyboardHeight - window.visualViewport.offsetTop + 6;
-          inputContainer.style.transform = `translateY(-${offset}px)`;
-          inputContainer.style.paddingBottom = '4px';
+          // L'input sale in alto esattamente all'altezza della tastiera
+          inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
+          chatContainer.style.bottom = `${keyboardHeight + 60}px`;
         } else {
+          // Stato a riposo
           inputContainer.style.transform = 'translateY(0px)';
-          inputContainer.style.paddingBottom = 'calc(env(safe-area-inset-bottom) + 8px)';
+          chatContainer.style.bottom = 'calc(env(safe-area-inset-bottom) + 60px)';
         }
-        
+
         chatContainer.scrollTop = chatContainer.scrollHeight;
       };
 
-      window.visualViewport.addEventListener('resize', updatePosition);
-      window.visualViewport.addEventListener('scroll', updatePosition);
+      window.visualViewport.addEventListener('resize', adjustInput);
+      window.visualViewport.addEventListener('scroll', adjustInput);
     }
   </script>
 
