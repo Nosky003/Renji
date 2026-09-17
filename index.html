@@ -20,7 +20,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* BLOCCA LA PAGINA PRINCIPALE */
     html, body {
       width: 100% !important;
       height: 100% !important;
@@ -45,7 +44,6 @@
       overflow: hidden;
     }
 
-    /* Top Bar bloccata */
     .top-bar {
       position: absolute;
       top: 0;
@@ -114,7 +112,6 @@
       border-radius: 50%;
     }
 
-    /* AREA CHAT: L'UNICA CON SCROLL SCROLLBAR */
     .chat-container {
       position: absolute;
       top: calc(env(safe-area-inset-top) + 56px);
@@ -154,7 +151,6 @@
       word-wrap: break-word;
     }
 
-    /* Contenitore Input Ancorato */
     .input-container {
       position: absolute;
       bottom: 0;
@@ -444,14 +440,14 @@
       }
     });
 
-    // Blocco assoluto dello scroll della pagina
+    // Blocco dello scroll indesiderato della pagina
     document.addEventListener('touchmove', (e) => {
       if (!e.target.closest('#chatContainer')) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    // CHIUSURA TASTIERA: Esclusivamente trascinando il dito verso il basso sull'area dell'input
+    // Gestione chiusura tastiera con swipe verso il basso sull'input
     let startY = 0;
 
     inputContainer.addEventListener('touchstart', (e) => {
@@ -467,7 +463,7 @@
       }
     }, { passive: true });
 
-    // CALCOLO POSIZIONE INPUT SOPRA LA TASTIERA
+    // Posizionamento dinamico sopra la tastiera (stile Gemini)
     if (window.visualViewport) {
       const adjustInput = () => {
         window.scrollTo(0, 0);
@@ -477,11 +473,9 @@
         const keyboardHeight = winHeight - vpHeight;
 
         if (keyboardHeight > 100) {
-          // L'input sale in alto esattamente all'altezza della tastiera
           inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
           chatContainer.style.bottom = `${keyboardHeight + 60}px`;
         } else {
-          // Stato a riposo
           inputContainer.style.transform = 'translateY(0px)';
           chatContainer.style.bottom = 'calc(env(safe-area-inset-bottom) + 60px)';
         }
@@ -492,6 +486,13 @@
       window.visualViewport.addEventListener('resize', adjustInput);
       window.visualViewport.addEventListener('scroll', adjustInput);
     }
+
+    // Assistenza al focus per centrare il contenuto
+    userInput.addEventListener('focus', () => {
+      setTimeout(() => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }, 300);
+    });
   </script>
 
 </body>
