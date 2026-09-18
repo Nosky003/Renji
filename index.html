@@ -125,6 +125,7 @@
       gap: 12px;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
+      transition: bottom 0.2s cubic-bezier(0.2, 0, 0.2, 1);
     }
 
     .user-message {
@@ -151,6 +152,7 @@
       word-wrap: break-word;
     }
 
+    /* BARRA INPUT ANCORATA */
     .input-container {
       position: absolute;
       bottom: 0;
@@ -162,7 +164,8 @@
       padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
       background-color: #ffffff;
       z-index: 90;
-      transition: transform 0.15s ease-out;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+      will-change: transform;
     }
 
     .input-wrapper {
@@ -440,59 +443,61 @@
       }
     });
 
-    // Blocco dello scroll indesiderato della pagina
+    // Blocco dello scroll della pagina intera
     document.addEventListener('touchmove', (e) => {
       if (!e.target.closest('#chatContainer')) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    // Gestione chiusura tastiera con swipe verso il basso sull'input
+    // Swipe in basso sulla barra per nascondere la tastiera
     let startY = 0;
-
     inputContainer.addEventListener('touchstart', (e) => {
       startY = e.touches[0].clientY;
     }, { passive: true });
 
     inputContainer.addEventListener('touchmove', (e) => {
       const currentY = e.touches[0].clientY;
-      const diffY = currentY - startY;
-
-      if (diffY > 12 && document.activeElement === userInput) {
+      if (currentY - startY > 12 && document.activeElement === userInput) {
         userInput.blur();
       }
     }, { passive: true });
 
-    // Posizionamento dinamico sopra la tastiera (stile Gemini)
-    if (window.visualViewport) {
-      const adjustInput = () => {
-        window.scrollTo(0, 0);
-        
-        const vpHeight = window.visualViewport.height;
-        const winHeight = window.innerHeight;
-        const keyboardHeight = winHeight - vpHeight;
-
-        if (keyboardHeight > 100) {
-          inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
-          chatContainer.style.bottom = `${keyboardHeight + 60}px`;
-        } else {
-          inputContainer.style.transform = 'translateY(0px)';
-          chatContainer.style.bottom = 'calc(env(safe-area-inset-bottom) + 60px)';
-        }
-
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      };
-
-      window.visualViewport.addEventListener('resize', adjustInput);
-      window.visualViewport.addEventListener('scroll', adjustInput);
+    // SPOSTAMENTO DINAMICO INPUT NATIVO CON CAPACITOR KEYBOARD
+    function setKeyboardOffset(height) {
+      if (height > 0) {
+        inputContainer.style.transform = `translateY(-${height}px)`;
+        inputContainer.style.paddingBottom = '8px';
+        chatContainer.style.bottom = `${height + 56}px`;
+      } else {
+        inputContainer.style.transform = 'translateY(0px)';
+        inputContainer.style.paddingBottom = 'calc(env(safe-area-inset-bottom) + 8px)';
+        chatContainer.style.bottom = 'calc(env(safe-area-inset-bottom) + 60px)';
+      }
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // Assistenza al focus per centrare il contenuto
-    userInput.addEventListener('focus', () => {
-      setTimeout(() => {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      }, 300);
-    });
+    // Ascolto eventi nativi Capacitor se disponibili
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Keyboard) {
+      const Keyboard = window.Capacitor.Plugins.Keyboard;
+
+      Keyboard.addListener('keyboardWillShow', (info) => {
+        setKeyboardOffset(info.keyboardHeight);
+      });
+
+      Keyboard.addListener('keyboardWillHide', () => {
+        setKeyboardOffset(0);
+      });
+    } else if (window.visualViewport) {
+      // Fallback per browser/pwa
+      const handleResize = () => {
+        window.scrollTo(0, 0);
+        const kh = window.innerHeight - window.visualViewport.height;
+        setKeyboardOffset(kh > 100 ? kh : 0);
+      };
+      window.visualViewport.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
+    }
   </script>
 
 </body>
