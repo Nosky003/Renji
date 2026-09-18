@@ -83,17 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 8px;
     }
 
     .menu-item {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background-color: #ffffff;
-      color: #1f1f1f;
+      padding: 12px 0; /* Allinea perfettamente al margine di Renji */
+      border-radius: 8px;
+      background-color: transparent;
+      color: #000000;
       font-size: 1.05rem;
       font-weight: 400;
       cursor: pointer;
@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 22px;
       height: 22px;
       flex-shrink: 0;
+      stroke: #000000;
+      fill: #000000;
     }
   `;
   document.head.appendChild(style);
@@ -121,9 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="drawer-content">
-        <!-- Nuova Chat con icona SVG a pennino e riquadro arrotondato -->
+        <!-- Nuova Chat con icona SVG a matita nera -->
         <div class="menu-item" data-action="new-chat">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#444746" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3H8C5.23858 3 3 5.23858 3 8V16C3 18.7614 5.23858 21 8 21H16C18.7614 21 21 18.7614 21 16V12" />
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
@@ -132,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Cerca nelle chat -->
         <div class="menu-item" data-action="search-chat">
-          <svg viewBox="0 0 24 24" fill="#444746">
+          <svg viewBox="0 0 24 24" fill="#000000">
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
           </svg>
           <span>Cerca nelle chat</span>
