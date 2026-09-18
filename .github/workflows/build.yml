@@ -42,9 +42,9 @@ jobs:
             "webDir": "www",
             "plugins": {
               "Keyboard": {
-                "resize": "body",
+                "resize": "none",
                 "style": "LIGHT",
-                "resizeOnFullScreen": true
+                "resizeOnFullScreen": false
               }
             }
           }
