@@ -46,15 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
       height: calc(env(safe-area-inset-top) + 56px);
       border-bottom: 1px solid #e0e0e0;
       background-color: #ffffff;
+      box-sizing: border-box;
     }
 
     .drawer-title {
       font-size: 1.3rem;
       font-weight: 700;
       color: #000000;
+      line-height: 1;
+      display: flex;
+      align-items: center;
     }
 
-    /* Tasto X dentro un cerchio stilizzato uguale al tasto header */
+    /* Tasto X dentro un cerchio stilizzato */
     .close-btn {
       width: 36px;
       height: 36px;
@@ -79,18 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
       padding: 16px;
       display: flex;
       flex-direction: column;
+      gap: 4px;
     }
 
     .menu-item {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
+      gap: 16px;
+      padding: 12px 14px;
       border-radius: 12px;
       background-color: #ffffff;
       color: #1f1f1f;
-      font-size: 1rem;
-      font-weight: 500;
+      font-size: 1.05rem;
+      font-weight: 400;
       cursor: pointer;
       transition: background-color 0.15s ease;
     }
@@ -101,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 22px;
       height: 22px;
       fill: #444746;
+      flex-shrink: 0;
     }
   `;
   document.head.appendChild(style);
@@ -116,11 +122,20 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="drawer-content">
+        <!-- Nuova Chat con icona Gemini originale -->
         <div class="menu-item" data-action="new-chat">
           <svg viewBox="0 0 24 24">
-            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 10H6.83L5 14.83V5h14v8zM11.5 7l.88 1.88L14.26 9.76l-1.88.88-.88 1.88-.88-1.88-1.88-.88 1.88-.88L11.5 7z"/>
           </svg>
           <span>Nuova chat</span>
+        </div>
+
+        <!-- Cerca nelle chat (Solo estetica) -->
+        <div class="menu-item" data-action="search-chat">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <span>Cerca nelle chat</span>
         </div>
       </div>
     </div>
@@ -167,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', handleClose, { capture: true });
   }
 
-  // Gestione del click su Nuova Chat
+  // Gestione del click sulle voci
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', () => {
       const action = item.getAttribute('data-action');
