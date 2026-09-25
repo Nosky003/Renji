@@ -23,6 +23,7 @@ jobs:
           mkdir -p www
           cp index.html www/ 2>/dev/null || true
           cp menu.js www/ 2>/dev/null || true
+          cp apps.js www/ 2>/dev/null || true
           cp manifest.json www/ 2>/dev/null || true
           cp apple-touch-icon.png www/ 2>/dev/null || true
 
