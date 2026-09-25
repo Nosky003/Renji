@@ -1,27 +1,27 @@
-// Funzioni globali per aprire e chiudere la schermata 3D Creator
+// Funzioni globali per la schermata 3D Creator
 window.openThreeDModal = function() {
   const modal = document.getElementById('threeDModal');
-  if (modal) {
-    modal.classList.add('active');
-  }
+  if (modal) modal.classList.add('active');
 };
 
 window.closeThreeDModal = function() {
   const modal = document.getElementById('threeDModal');
-  if (modal) {
-    modal.classList.remove('active');
-  }
+  if (modal) modal.classList.remove('active');
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Carica Three.js dinamicamente se non presente
+  // Caricamento dinamico di Three.js e OrbitControls
   if (!window.THREE) {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
     document.head.appendChild(script);
+
+    const orbitScript = document.createElement('script');
+    orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
+    document.head.appendChild(orbitScript);
   }
 
-  // Inietta gli stili CSS della schermata 3D Creator
+  // Iniezione degli stili CSS
   const style = document.createElement('style');
   style.textContent = `
     .threed-modal {
@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
       font-size: 1.3rem;
       font-weight: 700;
       color: #000000;
-      line-height: 1;
     }
 
     .threed-close-btn {
@@ -71,16 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
       border-radius: 50%;
       background-color: #ffffff;
       border: 1px solid #e0e0e0;
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      padding: 0;
-      color: #000000;
       font-size: 20px;
-      line-height: 1;
-      font-weight: 400;
     }
 
     .threed-body {
@@ -93,43 +88,26 @@ document.addEventListener('DOMContentLoaded', () => {
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Area Upload Immagine */
     .upload-area {
       border: 2px dashed #007aff;
       border-radius: 16px;
-      padding: 24px 16px;
+      padding: 20px;
       text-align: center;
       background-color: #f8f9fa;
       cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .upload-area:active {
-      background-color: #e8f0fe;
-    }
-
-    .upload-icon {
-      margin-bottom: 8px;
     }
 
     .upload-text {
       font-size: 0.95rem;
       font-weight: 600;
       color: #007aff;
-      margin-bottom: 4px;
     }
 
-    .upload-subtext {
-      font-size: 0.78rem;
-      color: #8e8e93;
-    }
-
-    /* Anteprima Immagine */
     .image-preview-container {
       display: none;
       position: relative;
       width: 100%;
-      max-height: 180px;
+      max-height: 160px;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid #e0e0e0;
@@ -144,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     .image-preview-container img {
       max-width: 100%;
-      max-height: 180px;
+      max-height: 160px;
       object-fit: contain;
     }
 
@@ -155,54 +133,53 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.6);
       color: #fff;
       border: none;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
     }
 
-    /* Controlli Parametri */
     .controls-card {
       background-color: #f8f9fa;
       border: 1px solid #e0e0e0;
       border-radius: 16px;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     .control-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .control-label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #333333;
+      color: #333;
     }
 
     .control-select, .control-range {
       width: 100%;
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 8px;
+      border-radius: 8px;
       border: 1px solid #d1d1d6;
-      background-color: #ffffff;
-      font-size: 0.9rem;
-      outline: none;
+      background-color: #fff;
+      font-size: 0.85rem;
     }
 
-    /* Canvas 3D Preview */
     .viewport-3d {
       width: 100%;
-      height: 220px;
-      background-color: #1c1c1e;
+      height: 260px;
+      background-color: #111113;
       border-radius: 16px;
       overflow: hidden;
       position: relative;
@@ -211,149 +188,135 @@ document.addEventListener('DOMContentLoaded', () => {
       justify-content: center;
     }
 
+    .viewport-tools {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
     .viewport-placeholder {
       color: #8e8e93;
       font-size: 0.85rem;
       text-align: center;
+      padding: 20px;
     }
 
-    /* Pulsanti Azione */
     .action-buttons {
       display: flex;
       gap: 12px;
-      margin-top: 8px;
+      margin-top: 4px;
       padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
     }
 
-    .btn-primary {
+    .btn-primary, .btn-secondary {
       flex: 1;
       height: 48px;
-      background-color: #007aff;
-      color: #ffffff;
       border: none;
       border-radius: 24px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 122, 255, 0.25);
-      transition: background-color 0.2s;
-    }
-
-    .btn-primary:disabled {
-      background-color: #c7c7cc;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    .btn-secondary {
-      flex: 1;
-      height: 48px;
-      background-color: #34c759;
       color: #ffffff;
-      border: none;
-      border-radius: 24px;
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(52, 199, 89, 0.25);
     }
 
-    .btn-secondary:disabled {
-      background-color: #c7c7cc;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
+    .btn-primary { background-color: #007aff; }
+    .btn-secondary { background-color: #34c759; }
+    .btn-primary:disabled, .btn-secondary:disabled { background-color: #c7c7cc; }
   `;
   document.head.appendChild(style);
 
-  // Inietta l'HTML della schermata 3D Creator
+  // Iniezione HTML della schermata
   const modalContainer = document.createElement('div');
   modalContainer.innerHTML = `
     <div class="threed-modal" id="threeDModal">
       <div class="threed-header">
-        <span class="threed-title">3D Creator</span>
-        <button type="button" class="threed-close-btn" id="closeThreeDBtn" aria-label="Chiudi">&times;</button>
+        <span class="threed-title">3D Creator Pro</span>
+        <button type="button" class="threed-close-btn" id="closeThreeDBtn">&times;</button>
       </div>
 
       <div class="threed-body">
-        <!-- Area Caricamento Immagine -->
         <input type="file" id="threedFileInput" accept="image/*" style="display: none;">
         <div class="upload-area" id="threedUploadArea">
-          <div class="upload-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-          </div>
-          <div class="upload-text">Seleziona o scatta un'immagine</div>
-          <div class="upload-subtext">JPG, PNG supportati</div>
+          <div class="upload-text">📁 Carica immagine (PNG/JPG)</div>
         </div>
 
-        <!-- Anteprima Immagine Caricata -->
         <div class="image-preview-container" id="threedImgPreviewContainer">
           <img id="threedImgPreview" src="" alt="Anteprima">
           <button type="button" class="remove-img-btn" id="removeThreedImgBtn">&times;</button>
         </div>
 
-        <!-- Parametri Modello 3D -->
+        <!-- Controlli Avanzati -->
         <div class="controls-card">
-          <div class="control-group">
-            <label class="control-label">Formato di esportazione</label>
-            <select class="control-select" id="exportFormat">
-              <option value="obj">OBJ (.obj)</option>
-              <option value="gltf">GLTF (.gltf)</option>
-              <option value="stl">STL (.stl - Stampa 3D)</option>
-            </select>
+          <div class="controls-grid">
+            <div class="control-group">
+              <label class="control-label">Formato Esportazione</label>
+              <select class="control-select" id="exportFormat">
+                <option value="obj">OBJ (.obj)</option>
+                <option value="gltf">GLTF (.gltf)</option>
+                <option value="stl">STL (Stampa 3D)</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label">Finitura Materiale</label>
+              <select class="control-select" id="materialStyle">
+                <option value="standard">Standard / Plastica</option>
+                <option value="matte">Opaco</option>
+                <option value="metal">Metallo Lucido</option>
+              </select>
+            </div>
           </div>
 
           <div class="control-group">
-            <label class="control-label">Profondità Estrusione (3D)</label>
-            <input type="range" class="control-range" id="depthRange" min="1" max="20" value="5">
+            <label class="control-label">Spessore Estrusione 3D</label>
+            <input type="range" class="control-range" id="depthRange" min="0.1" max="1.5" step="0.1" value="0.4">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Smussatura Bordi (Bevel)</label>
+            <input type="range" class="control-range" id="bevelRange" min="0" max="0.1" step="0.01" value="0.03">
           </div>
         </div>
 
-        <!-- Visualizzatore 3D -->
+        <!-- Visualizzatore 3D con controlli interattivi -->
         <div class="viewport-3d" id="viewport3D">
+          <div class="viewport-tools">
+            <button class="tool-btn" id="toggleWireframeBtn">Griglia Wireframe</button>
+            <button class="tool-btn" id="resetCameraBtn">Reset Vista</button>
+          </div>
           <div class="viewport-placeholder" id="viewportPlaceholder">
-            Carica un'immagine e premi "Genera 3D" per visualizzare il modello
+            Carica un'immagine e premi "Genera 3D" per creare la forma sagomata
           </div>
         </div>
 
-        <!-- Pulsanti d'Azione -->
         <div class="action-buttons">
-          <button type="button" class="btn-primary" id="generate3DBtn" disabled>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-              <polyline points="2 17 12 22 22 17"/>
-              <polyline points="2 12 12 17 22 12"/>
-            </svg>
-            Genera 3D
-          </button>
-
-          <button type="button" class="btn-secondary" id="download3DBtn" disabled>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Scarica
-          </button>
+          <button type="button" class="btn-primary" id="generate3DBtn" disabled>✨ Genera Forma 3D</button>
+          <button type="button" class="btn-secondary" id="download3DBtn" disabled>💾 Scarica Modello</button>
         </div>
       </div>
     </div>
   `;
   document.body.appendChild(modalContainer);
 
-  // Variabili di stato
+  // Elementi del DOM
   const fileInput = document.getElementById('threedFileInput');
   const uploadArea = document.getElementById('threedUploadArea');
   const imgPreviewContainer = document.getElementById('threedImgPreviewContainer');
@@ -364,16 +327,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeBtn = document.getElementById('closeThreeDBtn');
   const viewport = document.getElementById('viewport3D');
   const viewportPlaceholder = document.getElementById('viewportPlaceholder');
+  const wireframeBtn = document.getElementById('toggleWireframeBtn');
+  const resetCamBtn = document.getElementById('resetCameraBtn');
 
   let currentImageData = null;
-  let renderer = null, scene = null, camera = null, currentMesh = null;
+  let renderer = null, scene = null, camera = null, controls = null, currentMesh = null;
+  let isWireframe = false;
 
-  // Event Listener Chiusura
-  closeBtn.addEventListener('click', () => {
-    window.closeThreeDModal();
-  });
-
-  // Event Listener Upload
+  closeBtn.addEventListener('click', () => window.closeThreeDModal());
   uploadArea.addEventListener('click', () => fileInput.click());
 
   fileInput.addEventListener('change', (e) => {
@@ -405,21 +366,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Generazione del modello 3D basato su Three.js
+  // Alterna la visualizzazione Wireframe
+  wireframeBtn.addEventListener('click', () => {
+    if (currentMesh) {
+      isWireframe = !isWireframe;
+      if (Array.isArray(currentMesh.material)) {
+        currentMesh.material.forEach(m => m.wireframe = isWireframe);
+      } else {
+        currentMesh.material.wireframe = isWireframe;
+      }
+    }
+  });
+
+  // Reset della telecamera 3D
+  resetCamBtn.addEventListener('click', () => {
+    if (camera && controls) {
+      camera.position.set(0, 0, 4);
+      controls.reset();
+    }
+  });
+
+  // Algoritmo per estrarre la sagoma dall'immagine e generarne il solido 3D
   generateBtn.addEventListener('click', () => {
     if (!currentImageData) return;
 
     if (viewportPlaceholder) viewportPlaceholder.style.display = 'none';
 
-    // Inizializza Scene Three.js
     const width = viewport.clientWidth;
     const height = viewport.clientHeight;
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1c1c1e);
+    scene.background = new THREE.Color(0x111113);
 
     camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 5);
+    camera.position.set(0, 0, 4);
 
     if (renderer && renderer.domElement) {
       viewport.removeChild(renderer.domElement);
@@ -429,49 +409,102 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.setSize(width, height);
     viewport.appendChild(renderer.domElement);
 
+    if (window.THREE.OrbitControls) {
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+    }
+
     // Luci
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(5, 5, 5);
-    scene.add(dirLight);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.6);
+    dirLight1.position.set(5, 5, 5);
+    scene.add(dirLight1);
 
-    // Crea un Cubo / Forma 3D Estrusa con la Texture dell'immagine carica
+    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
+    dirLight2.position.set(-5, -5, -2);
+    scene.add(dirLight2);
+
+    // Caricamento Texture e Generazione Sagoma
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(currentImageData, (texture) => {
-      const depth = parseFloat(document.getElementById('depthRange').value) / 5;
-      const geometry = new THREE.BoxGeometry(2, 2, depth);
-      const material = new THREE.MeshStandardMaterial({ map: texture });
+      const depth = parseFloat(document.getElementById('depthRange').value);
+      const bevel = parseFloat(document.getElementById('bevelRange').value);
+      const style = document.getElementById('materialStyle').value;
+
+      // Crea un piano frontale sagomato proporzionato
+      const img = texture.image;
+      const aspect = img.width / img.height;
+      const planeWidth = 2 * (aspect >= 1 ? 1 : aspect);
+      const planeHeight = 2 * (aspect >= 1 ? (1 / aspect) : 1);
+
+      // Sagoma arrotondata con estrusione e smussamento dei bordi
+      const shape = new THREE.Shape();
+      const w = planeWidth / 2;
+      const h = planeHeight / 2;
+      const r = 0.1;
+
+      shape.moveTo(-w + r, -h);
+      shape.lineTo(w - r, -h);
+      shape.quadraticCurveTo(w, -h, w, -h + r);
+      shape.lineTo(w, h - r);
+      shape.quadraticCurveTo(w, h, w - r, h);
+      shape.lineTo(-w + r, h);
+      shape.quadraticCurveTo(-w, h, -w, h - r);
+      shape.lineTo(-w, -h + r);
+      shape.quadraticCurveTo(-w, -h, -w + r, -h);
+
+      const extrudeSettings = {
+        steps: 1,
+        depth: depth,
+        bevelEnabled: bevel > 0,
+        bevelThickness: bevel,
+        bevelSize: bevel,
+        bevelSegments: 3
+      };
+
+      const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      geometry.center();
+
+      // Configurazione Materiali (Frontale con Texture + Bordi 3D)
+      let sideMaterial;
+      if (style === 'metal') {
+        sideMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.8, roughness: 0.2 });
+      } else if (style === 'matte') {
+        sideMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.9 });
+      } else {
+        sideMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.4, metalness: 0.1 });
+      }
+
+      const frontMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.3 });
+      const materials = [frontMaterial, sideMaterial];
 
       if (currentMesh) scene.remove(currentMesh);
-      currentMesh = new THREE.Mesh(geometry, material);
+      currentMesh = new THREE.Mesh(geometry, materials);
       scene.add(currentMesh);
 
-      // Animazione di rotazione semplice
-      function animate() {
+      function renderLoop() {
         if (!renderer) return;
-        requestAnimationFrame(animate);
-        if (currentMesh) {
-          currentMesh.rotation.y += 0.01;
-        }
+        requestAnimationFrame(renderLoop);
+        if (controls) controls.update();
         renderer.render(scene, camera);
       }
-      animate();
+      renderLoop();
 
       downloadBtn.disabled = false;
     });
   });
 
-  // Scaricamento del file 3D
+  // Scaricamento file
   downloadBtn.addEventListener('click', () => {
     const format = document.getElementById('exportFormat').value;
-    const content = "3D Model generated by Renji 3D Creator";
+    const content = "Renji 3D Model Asset Export";
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `renji_model.${format}`;
+    a.download = `renji_3d_model.${format}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
