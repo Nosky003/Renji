@@ -1,35 +1,35 @@
-// Funzioni globali per la gestione del modal Applicazioni
+// Definizione globale per l'apertura e chiusura della schermata App
 window.openAppsModal = function() {
-  const appsModal = document.getElementById('appsModal');
-  if (appsModal) {
-    appsModal.classList.add('active');
+  const modal = document.getElementById('appsModal');
+  if (modal) {
+    modal.classList.add('active');
   }
 };
 
 window.closeAppsModal = function() {
-  const appsModal = document.getElementById('appsModal');
-  if (appsModal) {
-    appsModal.classList.remove('active');
+  const modal = document.getElementById('appsModal');
+  if (modal) {
+    modal.classList.remove('active');
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inietta lo stile CSS per la schermata Applicazioni
+  // Inietta lo stile CSS dedicato alle Applicazioni
   const style = document.createElement('style');
   style.textContent = `
     .apps-modal {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background-color: #ffffff;
-      z-index: 2000;
+      z-index: 9999;
       transform: translateX(-100%);
       transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
-      will-change: transform;
+      box-sizing: border-box;
     }
 
     .apps-modal.active {
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 
-  // Inietta la struttura HTML della schermata Applicazioni
+  // Inietta l'HTML della schermata Applicazioni nel DOM
   const appsContainer = document.createElement('div');
   appsContainer.innerHTML = `
     <div class="apps-modal" id="appsModal">
@@ -159,11 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.body.appendChild(appsContainer);
 
-  const closeAppsBtn = document.getElementById('closeAppsBtn');
-  if (closeAppsBtn) {
-    closeAppsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+  // Listener per il pulsante chiudi
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'closeAppsBtn') {
       window.closeAppsModal();
-    });
-  }
+    }
+  });
 });
