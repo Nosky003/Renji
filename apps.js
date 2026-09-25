@@ -1,7 +1,9 @@
-// Definizione globale immediata
+// Definizione globale immediata per l'apertura del modal
 window.openAppsModal = function() {
   const appsModal = document.getElementById('appsModal');
   if (appsModal) {
+    // Forziamo il reflow/rendering prima di aggiungere la classe per garantire l'animazione
+    void appsModal.offsetWidth;
     appsModal.classList.add('active');
   }
 };
@@ -12,19 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
   style.textContent = `
     .apps-modal {
       position: fixed;
-      top: -100%;
+      top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background-color: #ffffff;
       z-index: 2000;
-      transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+      transform: translateY(-100%);
+      transition: transform 0.35s cubic-bezier(0.2, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
+      will-change: transform;
+      visibility: hidden;
     }
 
     .apps-modal.active {
-      transform: translateY(100%);
+      transform: translateY(0);
+      visibility: visible;
     }
 
     .apps-header {
@@ -39,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
       border-bottom: 1px solid #e0e0e0;
       background-color: #ffffff;
       box-sizing: border-box;
+      flex-shrink: 0;
     }
 
     .apps-title {
@@ -74,9 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
       flex-wrap: wrap;
       gap: 16px;
       align-content: flex-start;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* Card Applicazione a sinistra */
+    /* Card Applicazione */
     .app-card {
       width: 140px;
       display: flex;
