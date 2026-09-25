@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="drawer-content">
-        <!-- Nuova Chat con linea definita nera (fill: none) -->
+        <!-- Nuova Chat con linea definita nera -->
         <div class="menu-item" data-action="new-chat">
           <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3H8C5.23858 3 3 5.23858 3 8V16C3 18.7614 5.23858 21 8 21H16C18.7614 21 21 18.7614 21 16V12" />
@@ -130,12 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Nuova chat</span>
         </div>
 
-        <!-- Cerca nelle chat con la nuova lente vettoriale nera -->
+        <!-- Cerca nelle chat con lente nera pulita -->
         <div class="menu-item" data-action="search-chat">
-          <svg viewBox="0 0 980 980" fill="#000000">
-            <g transform="translate(0.000000,980.000000) scale(0.100000,-0.100000)">
-              <path d="M3735 7504 c-427 -64 -769 -245 -1039 -549 -187 -69 211 -312 -464 -378 -762 -18 -83 -22 -131 -22 -313 -1 -238 14 -340 76 -525 2646 7 -787 1072 -1251 1885 -1086 209 43 450 148 622 272 l84 61 1146 -1146 c648 35 -647 1158 -1150 1174 -1156 48 -17 111 -12 148 13 70 47 97 127 69 204 -6 1 426 -509 526 -1157 1175 l-1146 1146 30 39 c17 21 51 70 76 108 317 493 346 1127 75 1646 -194 372 -547 672 -938 798 -177 57 -277 73 -485 76 -104 2 -203 1 -220 -1z m406 -340 c481 -82 873 -418 1027 -879 83 -251 84 -576 0 -820 -69 -203 -170 -365 -319 -514 -109 -110 -199 -175 -329 -241 -216 -108 -390 -146 -644 -137 -220 7 -358 42 -547 138 -348 177 -597 503 -685 894 -25 112 -30 353 -10 476 47 285 177 532 387 733 198 191 425 305 694 350 113 19 312 19 426 0z"/>
-            </g>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <line x1="15.5" y1="15.5" x2="21" y2="21" />
           </svg>
           <span>Cerca nelle chat</span>
         </div>
