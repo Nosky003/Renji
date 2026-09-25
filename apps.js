@@ -1,3 +1,11 @@
+// Definizione globale immediata
+window.openAppsModal = function() {
+  const appsModal = document.getElementById('appsModal');
+  if (appsModal) {
+    appsModal.classList.add('active');
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Inietta lo stile CSS per la schermata Applicazioni (Full Screen che scende dall'alto)
   const style = document.createElement('style');
@@ -77,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
       cursor: pointer;
       text-decoration: none;
       color: inherit;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .app-icon-square {
@@ -142,13 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const appsModal = document.getElementById('appsModal');
   const closeAppsBtn = document.getElementById('closeAppsBtn');
-
-  // Funzione globale per aprire la schermata
-  window.openAppsModal = function() {
-    if (appsModal) {
-      appsModal.classList.add('active');
-    }
-  };
 
   function closeAppsModal(e) {
     if (e) {
