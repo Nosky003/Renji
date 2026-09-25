@@ -161,8 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('menuOverlay');
   const closeBtn = document.getElementById('closeDrawerBtn');
 
-  if (!leftBtn || !sideDrawer || !overlay) return;
-
   function toggleMenu(open) {
     if (open) {
       sideDrawer.classList.add('active');
@@ -173,14 +171,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  leftBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleMenu(true);
-  });
+  if (leftBtn) {
+    leftBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu(true);
+    });
+  }
 
-  overlay.addEventListener('click', () => {
-    toggleMenu(false);
-  });
+  if (overlay) {
+    overlay.addEventListener('click', () => toggleMenu(false));
+  }
 
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Gestione click sulle voci di menu
+  // Gestione click sulle opzioni del menu
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -200,11 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chatContainer) chatContainer.innerHTML = '';
         toggleMenu(false);
       } else if (action === 'apps-renji') {
-        // Apre la schermata Applicazioni PRIMA di chiudere il drawer per evitare sfarfallii
+        toggleMenu(false);
         if (typeof window.openAppsModal === 'function') {
           window.openAppsModal();
         }
-        toggleMenu(false);
       } else {
         toggleMenu(false);
       }
