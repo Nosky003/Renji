@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof window.openAppsModal === 'function') {
           window.openAppsModal();
         }
-      }, 50);
+      }, 150);
     }
   }
 
