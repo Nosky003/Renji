@@ -1,14 +1,20 @@
-// Definizione globale immediata per l'apertura del modal
+// Funzioni globali per la gestione del modal Applicazioni
 window.openAppsModal = function() {
   const appsModal = document.getElementById('appsModal');
   if (appsModal) {
-    void appsModal.offsetWidth;
     appsModal.classList.add('active');
   }
 };
 
+window.closeAppsModal = function() {
+  const appsModal = document.getElementById('appsModal');
+  if (appsModal) {
+    appsModal.classList.remove('active');
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Inietta lo stile CSS per la schermata Applicazioni (Scorrevole da sinistra a destra)
+  // Inietta lo stile CSS per la schermata Applicazioni
   const style = document.createElement('style');
   style.textContent = `
     .apps-modal {
@@ -81,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Card Applicazione */
     .app-card {
       width: 140px;
       display: flex;
@@ -129,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 
-  // Inietta l'HTML della schermata Applicazioni
+  // Inietta la struttura HTML della schermata Applicazioni
   const appsContainer = document.createElement('div');
   appsContainer.innerHTML = `
     <div class="apps-modal" id="appsModal">
@@ -138,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="apps-close-btn" id="closeAppsBtn" aria-label="Chiudi">&times;</button>
       </div>
       <div class="apps-body">
-        <!-- Card App 3D Generator -->
         <div class="app-card" id="app3DCard">
           <div class="app-icon-square">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -155,21 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.body.appendChild(appsContainer);
 
-  const appsModal = document.getElementById('appsModal');
   const closeAppsBtn = document.getElementById('closeAppsBtn');
-
-  function closeAppsModal(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    if (appsModal) {
-      appsModal.classList.remove('active');
-    }
-  }
-
   if (closeAppsBtn) {
-    closeAppsBtn.addEventListener('touchstart', closeAppsModal, { capture: true, passive: false });
-    closeAppsBtn.addEventListener('click', closeAppsModal, { capture: true });
+    closeAppsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.closeAppsModal();
+    });
   }
 });
