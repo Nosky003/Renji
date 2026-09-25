@@ -2,14 +2,13 @@
 window.openAppsModal = function() {
   const appsModal = document.getElementById('appsModal');
   if (appsModal) {
-    // Forziamo il reflow/rendering prima di aggiungere la classe per garantire l'animazione
     void appsModal.offsetWidth;
     appsModal.classList.add('active');
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inietta lo stile CSS per la schermata Applicazioni (Full Screen che scende dall'alto)
+  // Inietta lo stile CSS per la schermata Applicazioni (Scorrevole da sinistra a destra)
   const style = document.createElement('style');
   style.textContent = `
     .apps-modal {
@@ -20,17 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
       height: 100%;
       background-color: #ffffff;
       z-index: 2000;
-      transform: translateY(-100%);
-      transition: transform 0.35s cubic-bezier(0.2, 0, 0.2, 1);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       will-change: transform;
-      visibility: hidden;
     }
 
     .apps-modal.active {
-      transform: translateY(0);
-      visibility: visible;
+      transform: translateX(0);
     }
 
     .apps-header {
