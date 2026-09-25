@@ -22,17 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
     .side-drawer {
       position: fixed;
       top: 0;
-      left: -100%;
+      left: 0;
       width: 100%;
       height: 100%;
       background-color: #ffffff;
       z-index: 1000;
+      transform: translateX(-100%);
       transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
     }
     .side-drawer.active {
-      transform: translateX(100%);
+      transform: translateX(0);
     }
 
     .drawer-header {
@@ -172,63 +173,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const handleOpen = (e) => {
-    e.preventDefault();
+  leftBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleMenu(true);
-  };
+  });
 
-  const handleClose = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  overlay.addEventListener('click', () => {
     toggleMenu(false);
-  };
-
-  leftBtn.addEventListener('touchstart', handleOpen, { capture: true, passive: false });
-  leftBtn.addEventListener('click', handleOpen, { capture: true });
-
-  overlay.addEventListener('touchstart', handleClose, { capture: true, passive: false });
-  overlay.addEventListener('click', handleClose, { capture: true });
+  });
 
   if (closeBtn) {
-    closeBtn.addEventListener('touchstart', handleClose, { capture: true, passive: false });
-    closeBtn.addEventListener('click', handleClose, { capture: true });
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu(false);
+    });
   }
 
-  // Gestione specifica dell'azione sulle voci del menu
-  function handleItemClick(e, item) {
-    e.preventDefault();
-    e.stopPropagation();
+  // Gestione click sulle voci di menu
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const action = item.getAttribute('data-action');
 
-    const action = item.getAttribute('data-action');
-    toggleMenu(false);
-
-    if (action === 'new-chat') {
-      const chatContainer = document.getElementById('chatContainer');
-      if (chatContainer) chatContainer.innerHTML = '';
-    } else if (action === 'apps-renji') {
-      setTimeout(() => {
+      if (action === 'new-chat') {
+        const chatContainer = document.getElementById('chatContainer');
+        if (chatContainer) chatContainer.innerHTML = '';
+        toggleMenu(false);
+      } else if (action === 'apps-renji') {
+        // Apre la schermata Applicazioni PRIMA di chiudere il drawer per evitare sfarfallii
         if (typeof window.openAppsModal === 'function') {
           window.openAppsModal();
         }
-      }, 150);
-    }
-  }
-
-  document.querySelectorAll('.menu-item').forEach(item => {
-    let touched = false;
-
-    item.addEventListener('touchstart', (e) => {
-      touched = true;
-      handleItemClick(e, item);
-    }, { passive: false });
-
-    item.addEventListener('click', (e) => {
-      if (touched) {
-        touched = false;
-        return;
+        toggleMenu(false);
+      } else {
+        toggleMenu(false);
       }
-      handleItemClick(e, item);
     });
   });
 });
