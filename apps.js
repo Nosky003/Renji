@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 
-  // Inietta l'HTML della schermata Applicazioni nel DOM
+  // Inietta l'HTML della schermata Applicazioni
   const appsContainer = document.createElement('div');
   appsContainer.innerHTML = `
     <div class="apps-modal" id="appsModal">
@@ -159,10 +159,20 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.body.appendChild(appsContainer);
 
-  // Listener per il pulsante chiudi
+  // Click su "Chiudi" Applicazioni
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'closeAppsBtn') {
       window.closeAppsModal();
     }
   });
+
+  // Click su "3D Creator" apre la schermata 3D
+  const app3DCard = document.getElementById('app3DCard');
+  if (app3DCard) {
+    app3DCard.addEventListener('click', () => {
+      if (typeof window.openThreeDModal === 'function') {
+        window.openThreeDModal();
+      }
+    });
+  }
 });
