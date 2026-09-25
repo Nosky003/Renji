@@ -130,13 +130,24 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Nuova chat</span>
         </div>
 
-        <!-- Cerca nelle chat con lente nera pulita -->
+        <!-- Cerca nelle chat -->
         <div class="menu-item" data-action="search-chat">
           <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="10.5" cy="10.5" r="6.5" />
             <line x1="15.5" y1="15.5" x2="21" y2="21" />
           </svg>
           <span>Cerca nelle chat</span>
+        </div>
+
+        <!-- Applicazioni di Renji -->
+        <div class="menu-item" data-action="apps-renji">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <span>Applicazioni di Renji</span>
         </div>
       </div>
     </div>
@@ -192,6 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (action === 'new-chat') {
         const chatContainer = document.getElementById('chatContainer');
         if (chatContainer) chatContainer.innerHTML = '';
+      } else if (action === 'apps-renji') {
+        if (typeof openAppsModal === 'function') {
+          openAppsModal();
+        }
       }
     });
   });
