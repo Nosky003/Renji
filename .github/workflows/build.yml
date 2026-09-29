@@ -25,14 +25,14 @@ jobs:
           cp menu.js www/ 2>/dev/null || true
           cp apps.js www/ 2>/dev/null || true
           cp threeD.js www/ 2>/dev/null || true
+          cp piante.js www/ 2>/dev/null || true
           cp manifest.json www/ 2>/dev/null || true
           cp apple-touch-icon.png www/ 2>/dev/null || true
-
 
       - name: Install Dependencies & Setup Capacitor
         run: |
           npm init -y
-          npm install @capacitor/core@^5.0.0 @capacitor/cli@^5.0.0 @capacitor/ios@^5.0.0 @capacitor/keyboard@^5.0.0
+          npm install @capacitor/core@^5.0.0 @capacitor/cli@^5.0.0 @capacitor/ios@^5.0.0 @capacitor/keyboard@^5.0.0 @capacitor/filesystem@^5.0.0
           npx cap init Renji com.renji.app --web-dir www
           npx cap add ios
           npx cap sync ios
@@ -54,6 +54,12 @@ jobs:
           }
           EOF
           npx cap copy ios
+
+      - name: Enable iOS Files App Sharing (Info.plist)
+        run: |
+          PLIST="ios/App/App/Info.plist"
+          plutil -insert UIFileSharingEnabled -bool YES "$PLIST" || true
+          plutil -insert LSSupportsOpeningDocumentsInPlace -bool YES "$PLIST" || true
 
       - name: Hide iOS Keyboard Toolbar (Remove Accessory View)
         run: |
