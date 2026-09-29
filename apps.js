@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 
-  // Inietta l'HTML della schermata Applicazioni
+  // Inietta l'HTML con 3D Creator e Catalogo Piante
   const appsContainer = document.createElement('div');
   appsContainer.innerHTML = `
     <div class="apps-modal" id="appsModal">
@@ -143,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="apps-close-btn" id="closeAppsBtn" aria-label="Chiudi">&times;</button>
       </div>
       <div class="apps-body">
+        <!-- 3D Creator -->
         <div class="app-card" id="app3DCard">
           <div class="app-icon-square">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -154,24 +155,46 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="app-name">3D Creator</span>
           <span class="app-description">Crea forme e modelli 3D partendo dalle tue immagini</span>
         </div>
+
+        <!-- Catalogo Piante -->
+        <div class="app-card" id="appPianteCard">
+          <div class="app-icon-square">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"/>
+              <path d="M12 22V12"/>
+              <path d="M12 12c-2-3-6-3-8 0 2 3 6 3 8 0z"/>
+              <path d="M12 12c2-3 6-3 8 0-2 3-6 3-8 0z"/>
+            </svg>
+          </div>
+          <span class="app-name">Catalogo Piante</span>
+          <span class="app-description">Crea studi sulle piante con foto e descrizioni salvate in File</span>
+        </div>
       </div>
     </div>
   `;
   document.body.appendChild(appsContainer);
 
-  // Click su "Chiudi" Applicazioni
+  // Eventi di chiusura e apertura
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'closeAppsBtn') {
       window.closeAppsModal();
     }
   });
 
-  // Click su "3D Creator" apre la schermata 3D
   const app3DCard = document.getElementById('app3DCard');
   if (app3DCard) {
     app3DCard.addEventListener('click', () => {
       if (typeof window.openThreeDModal === 'function') {
         window.openThreeDModal();
+      }
+    });
+  }
+
+  const appPianteCard = document.getElementById('appPianteCard');
+  if (appPianteCard) {
+    appPianteCard.addEventListener('click', () => {
+      if (typeof window.openPianteModal === 'function') {
+        window.openPianteModal();
       }
     });
   }
