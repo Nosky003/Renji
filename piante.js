@@ -72,44 +72,44 @@ document.addEventListener('DOMContentLoaded', () => {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 12px 16px;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+      padding: 12px 16px 0 16px;
       gap: 12px;
       overflow: hidden;
       box-sizing: border-box;
     }
 
-    /* SEZIONE FOTO CON SCORRIMENTO ORIZZONTALE VISIBILE */
+    /* SCORRIMENTO ORIZZONTALE FOTO */
     .photos-scroll-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      overflow-x: auto !important;
+      overflow-x: scroll !important;
       overflow-y: hidden;
-      padding: 6px 16px 12px 16px;
+      padding: 6px 16px 14px 16px;
       margin-left: -16px;
       margin-right: -16px;
       width: calc(100% + 32px);
       -webkit-overflow-scrolling: touch;
       touch-action: pan-x;
       flex-shrink: 0;
-      min-height: 105px;
+      min-height: 110px;
       box-sizing: border-box;
     }
 
     /* BARRA DI SCORRIMENTO ORIZZONTALE VISIBILE */
     .photos-scroll-container::-webkit-scrollbar {
-      height: 5px;
+      height: 6px;
+      display: block;
     }
 
     .photos-scroll-container::-webkit-scrollbar-track {
-      background: #f0f0f0;
+      background: #e8e8ed;
       border-radius: 10px;
       margin: 0 16px;
     }
 
     .photos-scroll-container::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
+      background: #8e8e93;
       border-radius: 10px;
     }
 
@@ -164,20 +164,20 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     }
 
-    /* SCHEDA PRINCIPALE - ALLUNGATA VERSO IL BASSO */
+    /* SCHEDA PRINCIPALE - ALLUNGATA FINO IN BASSO */
     .main-card {
       flex: 1;
       border: 1px solid #e0e0e0;
-      border-radius: 20px;
+      border-radius: 20px 20px 0 0;
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       background-color: #ffffff;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.03);
       position: relative;
       box-sizing: border-box;
-      margin-bottom: calc(env(safe-area-inset-bottom) + 8px);
+      margin-bottom: 0;
     }
 
     /* RIGA BOTTONI AZIONE */
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* SELETTORE FONT A TOCCO CON DEFAULT A 18 */
+    /* SELETTORE FONT CON TOUCH/SCROLLABILITÀ ABILITATA */
     .font-control-wrapper {
       position: relative;
     }
@@ -236,7 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
       background-color: #ffffff;
       border-radius: 24px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      overflow-y: auto;
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
       z-index: 50;
       box-sizing: border-box;
       padding: 8px 0;
@@ -255,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
       font-weight: 500;
       color: #8e8e93;
       cursor: pointer;
+      user-select: none;
       transition: background-color 0.15s ease;
     }
 
@@ -291,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
       flex-direction: column;
       gap: 10px;
       overflow: hidden;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
     }
 
     .title-textarea {
@@ -354,12 +358,12 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="piante-body">
         <input type="file" id="pianteFileInput" accept="image/*" style="display:none;" multiple>
         
-        <!-- Scorrimento Foto con Barra Visibile -->
+        <!-- Contenitore Foto a Scorrimento Orizzontale -->
         <div class="photos-scroll-container" id="photosScrollContainer">
           <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
         </div>
 
-        <!-- Scheda Testo Allungata -->
+        <!-- Scheda Estesa fino a fondo schermo -->
         <div class="main-card">
           <div class="card-actions-row">
             <button type="button" class="trash-btn" id="clearTextBtn" title="Cancella testo">
@@ -369,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </svg>
             </button>
 
-            <!-- Selettore Font con Default a 18 -->
+            <!-- Selettore Font -->
             <div class="font-control-wrapper">
               <button type="button" class="font-size-circle" id="fontSizeBtn">18</button>
               <div class="font-picker-pill" id="fontPickerPill"></div>
@@ -411,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
     opt.dataset.size = size;
     opt.textContent = size;
 
-    // Selezione immediata al singolo tocco (Tap)
+    // Selezione con singolo Tap
     opt.addEventListener('click', (e) => {
       e.stopPropagation();
       selectFontSize(size);
@@ -468,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.appendChild(delBtn);
         photosContainer.insertBefore(wrapper, addBtn);
 
-        // Scorre automaticamente verso destra per mostrare la nuova foto/bottone
+        // Auto-scroll verso destra alla creazione dell'immagine
         photosContainer.scrollLeft = photosContainer.scrollWidth;
       };
       reader.readAsDataURL(file);
@@ -476,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInput.value = '';
   });
 
-  // Gestione Focus dei Campi
+  // Gestione Focus Campi
   titleInput.addEventListener('focus', () => { activeElement = titleInput; });
   descInput.addEventListener('focus', () => { activeElement = descInput; });
 
@@ -492,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
     descInput.value = '';
   });
 
-  // Apertura/Chiusura Tendina Font
+  // Toggle Tendina Font
   fontSizeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fontPickerPill.classList.toggle('active');
@@ -552,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Salvataggio simulato nel browser.");
       }
 
-      // Reset
+      // Reset Form
       titleInput.value = '';
       titleInput.style.height = 'auto';
       descInput.value = '';
