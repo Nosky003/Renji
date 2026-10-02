@@ -78,14 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
       box-sizing: border-box;
     }
 
-    /* CONTENITORE E SCORRIMENTO FOTO */
+    /* SEZIONE CONTENITORE FOTO + LINEA SOTTILE */
+    .photos-section-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-bottom: 1px solid #e0e0e0; /* LINEA SOTTILE TRA LE FOTO E IL RETTANGOLO TESTO */
+      padding-bottom: 8px;
+    }
+
+    /* SCORRIMENTO ORIZZONTALE FOTO CON SCROLLBAR IN ALTO */
     .photos-scroll-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      overflow-x: auto !important;
+      overflow-x: scroll !important;
       overflow-y: hidden;
-      padding: 8px 16px 14px 16px;
+      padding: 10px 16px 8px 16px;
       margin-left: -16px;
       margin-right: -16px;
       width: calc(100% + 32px);
@@ -94,12 +103,20 @@ document.addEventListener('DOMContentLoaded', () => {
       flex-shrink: 0;
       min-height: 110px;
       box-sizing: border-box;
+
+      /* POSIZIONA LA BARRA DI SCORRIMENTO SOPRA LE FOTO */
+      transform: rotateX(180deg);
+    }
+
+    /* RIPRISTINA L'ORIENTAMENTO CORRETTO DELLE FOTO DENTRO */
+    .photos-scroll-container > * {
+      transform: rotateX(180deg);
     }
 
     /* BARRA DI SCORRIMENTO ORIZZONTALE VISIBILE */
     .photos-scroll-container::-webkit-scrollbar {
-      height: 6px !important;
-      display: block !important;
+      height: 6px;
+      display: block;
     }
 
     .photos-scroll-container::-webkit-scrollbar-track {
@@ -109,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     .photos-scroll-container::-webkit-scrollbar-thumb {
-      background: #000000;
+      background: #8e8e93;
       border-radius: 10px;
     }
 
@@ -164,18 +181,17 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     }
 
-    /* SCHEDA PRINCIPALE CON DELIMITAZIONE MARCATA */
+    /* SCHEDA PRINCIPALE - ALLUNGATA FINO IN BASSO */
     .main-card {
       flex: 1;
-      border: 1.5px solid #d1d1d6;
-      border-bottom: none;
+      border: 1px solid #e0e0e0;
       border-radius: 20px 20px 0 0;
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       background-color: #ffffff;
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.03);
       position: relative;
       box-sizing: border-box;
       margin-bottom: 0;
@@ -205,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* SELETTORE FONT */
+    /* SELETTORE FONT CON TOUCH/SCROLLABILITÀ ABILITATA */
     .font-control-wrapper {
       position: relative;
     }
@@ -359,9 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="piante-body">
         <input type="file" id="pianteFileInput" accept="image/*" style="display:none;" multiple>
         
-        <!-- Contenitore Foto a Scorrimento Orizzontale -->
-        <div class="photos-scroll-container" id="photosScrollContainer">
-          <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
+        <!-- Sezione Foto con Linea Sottile -->
+        <div class="photos-section-wrapper">
+          <!-- Contenitore Foto a Scorrimento Orizzontale -->
+          <div class="photos-scroll-container" id="photosScrollContainer">
+            <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
+          </div>
         </div>
 
         <!-- Scheda Estesa fino a fondo schermo -->
