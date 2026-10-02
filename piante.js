@@ -78,14 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
       box-sizing: border-box;
     }
 
-    /* SCORRIMENTO ORIZZONTALE FOTO */
+    /* CONTENITORE E SCORRIMENTO FOTO */
     .photos-scroll-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      overflow-x: scroll !important;
+      overflow-x: auto !important;
       overflow-y: hidden;
-      padding: 6px 16px 14px 16px;
+      padding: 8px 16px 14px 16px;
       margin-left: -16px;
       margin-right: -16px;
       width: calc(100% + 32px);
@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* BARRA DI SCORRIMENTO ORIZZONTALE VISIBILE */
     .photos-scroll-container::-webkit-scrollbar {
-      height: 6px;
-      display: block;
+      height: 6px !important;
+      display: block !important;
     }
 
     .photos-scroll-container::-webkit-scrollbar-track {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     .photos-scroll-container::-webkit-scrollbar-thumb {
-      background: #8e8e93;
+      background: #000000;
       border-radius: 10px;
     }
 
@@ -164,17 +164,18 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     }
 
-    /* SCHEDA PRINCIPALE - ALLUNGATA FINO IN BASSO */
+    /* SCHEDA PRINCIPALE CON DELIMITAZIONE MARCATA */
     .main-card {
       flex: 1;
-      border: 1px solid #e0e0e0;
+      border: 1.5px solid #d1d1d6;
+      border-bottom: none;
       border-radius: 20px 20px 0 0;
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       background-color: #ffffff;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
       position: relative;
       box-sizing: border-box;
       margin-bottom: 0;
@@ -204,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* SELETTORE FONT CON TOUCH/SCROLLABILITÀ ABILITATA */
+    /* SELETTORE FONT */
     .font-control-wrapper {
       position: relative;
     }
