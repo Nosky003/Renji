@@ -72,30 +72,33 @@ document.addEventListener('DOMContentLoaded', () => {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 16px;
+      padding: 12px 16px;
       padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
-      gap: 16px;
+      gap: 12px;
       overflow-y: auto;
       box-sizing: border-box;
     }
 
-    /* SEZIONE FOTO CON SCORRIMENTO */
+    /* SEZIONE FOTO CON SCORRIMENTO ORIZZONTALE OTTIMIZZATO */
     .photos-scroll-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      overflow-x: auto;
+      overflow-x: scroll !important;
       overflow-y: hidden;
-      padding: 6px 4px 10px 4px;
+      padding: 10px 16px 12px 4px;
       -webkit-overflow-scrolling: touch;
       touch-action: pan-x;
       flex-shrink: 0;
+      min-height: 108px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .photo-wrapper {
       position: relative;
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       flex-shrink: 0;
     }
 
@@ -107,23 +110,24 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
+    /* BOTTONE ELIMINA FOTO SENZA BORDO BIANCO */
     .delete-photo-btn {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -5px;
+      right: -5px;
       width: 22px;
       height: 22px;
       border-radius: 50%;
       background-color: #000000;
       color: #ffffff;
-      border: 1.5px solid #ffffff;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     }
 
     .add-photo-circle-btn {
@@ -140,12 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+      margin-right: 16px;
     }
 
-    /* CONTENITORE PRINCIPALE SCHEDA */
+    /* CONTENITORE PRINCIPALE DI DIMENSIONE FISSA E POSIZIONATO PIÙ IN BASSO */
     .main-card {
-      flex: 1;
+      height: 520px;
+      max-height: calc(100vh - 220px);
       border: 1px solid #e0e0e0;
       border-radius: 20px;
       padding: 16px;
@@ -155,10 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
       background-color: #ffffff;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       position: relative;
-      margin-bottom: 8px;
+      margin-top: 6px;
+      box-sizing: border-box;
     }
 
-    /* RIGA BOTTONI (GESTIONE E SALVATAGGIO) */
+    /* RIGA BOTTONI */
     .card-actions-row {
       display: flex;
       align-items: center;
@@ -183,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* BOTTONE FONT / PILLOLA VERTICALE */
+    /* GHIERA FONT STILE IPHONE SULLA SOGLIA DEL RETTANGOLO */
     .font-control-wrapper {
       position: relative;
     }
@@ -204,45 +211,72 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
+    /* GHIERA VERTICALE SBURANTE SULLA PARTE SUPERIORE ED INFERIORE DEL RETTANGOLO */
     .font-picker-pill {
       display: none;
       position: absolute;
-      top: -6px;
+      top: -60px;
       left: 50%;
       transform: translateX(-50%);
-      width: 44px;
-      height: 150px;
+      width: 48px;
+      height: 160px;
       background-color: #ffffff;
-      border-radius: 22px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      overflow-y: auto;
+      border-radius: 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      overflow-y: scroll;
       scroll-snap-type: y mandatory;
       -webkit-overflow-scrolling: touch;
-      z-index: 30;
-      padding: 8px 0;
+      z-index: 50;
       box-sizing: border-box;
+      padding: 60px 0;
+    }
+
+    .font-picker-pill::-webkit-scrollbar {
+      display: none;
     }
 
     .font-picker-pill.active {
       display: block;
     }
 
+    /* BARRETTE ORIZZONTALI NERE AL CENTRO DELLA GHIERA */
+    .font-picker-pill::before,
+    .font-picker-pill::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      height: 1.5px;
+      background-color: #000000;
+      z-index: 60;
+      pointer-events: none;
+    }
+
+    .font-picker-pill::before {
+      top: 60px;
+    }
+
+    .font-picker-pill::after {
+      top: 100px;
+    }
+
     .font-option {
-      height: 32px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #000000;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #8e8e93;
       scroll-snap-align: center;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
 
     .font-option.selected {
+      font-size: 1.1rem;
       font-weight: 800;
-      background-color: #f0f0f0;
-      border-radius: 10px;
+      color: #000000;
     }
 
     /* BOTTONE SALVA */
@@ -262,12 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
       background-color: #f5f5f7;
     }
 
-    /* CAMPI TESTO CON ANDAMENTO A CAPO AUTOMATICO */
+    /* CAMPI TESTO CON A CAPO AUTOMATICO */
     .inputs-container {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      overflow: hidden;
     }
 
     .title-textarea {
@@ -310,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       box-sizing: border-box;
       white-space: pre-wrap;
       word-wrap: break-word;
+      overflow-y: auto;
     }
 
     .description-textarea::placeholder {
@@ -346,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </svg>
             </button>
 
-            <!-- Selettore Font a Ghiera -->
+            <!-- Selettore Font a Ghiera iOS -->
             <div class="font-control-wrapper">
               <button type="button" class="font-size-circle" id="fontSizeBtn">22</button>
               <div class="font-picker-pill" id="fontPickerPill"></div>
@@ -356,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <button type="button" class="save-btn" id="pianteSaveBtn">SALVA</button>
           </div>
 
-          <!-- Campi Titolo e Descrizione con wrapping automatico -->
+          <!-- Campi Titolo e Descrizione -->
           <div class="inputs-container">
             <textarea class="title-textarea" id="plantTitleInput" placeholder="Titolo..." rows="1"></textarea>
             <textarea class="description-textarea" id="plantDescInput" placeholder="Descrizione..."></textarea>
@@ -382,10 +418,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let loadedImagesBase64 = [];
   let activeElement = titleInput;
 
-  // Popola la pillola con le opzioni del font (da 10px a 40px)
+  // Popola la ghiera del font (da 10px a 40px)
   for (let size = 10; size <= 40; size += 2) {
     const opt = document.createElement('div');
     opt.className = `font-option ${size === 22 ? 'selected' : ''}`;
+    opt.dataset.size = size;
     opt.textContent = size;
     opt.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -400,6 +437,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeElement) {
       activeElement.style.fontSize = `${size}px`;
     }
+    document.querySelectorAll('.font-option').forEach(opt => {
+      if (parseInt(opt.dataset.size) === size) {
+        opt.classList.add('selected');
+        opt.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } else {
+        opt.classList.remove('selected');
+      }
+    });
   }
 
   // Chiusura
@@ -408,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apertura Foto
   addBtn.addEventListener('click', () => fileInput.click());
 
-  // Caricamento Foto con eliminazione singola
+  // Caricamento Foto
   fileInput.addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
     files.forEach(file => {
@@ -442,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInput.value = '';
   });
 
-  // Gestione focus campi di testo
+  // Gestione Focus Campi
   function updateActiveElement(el) {
     activeElement = el;
     const currentSize = parseInt(window.getComputedStyle(activeElement).fontSize);
@@ -452,23 +497,26 @@ document.addEventListener('DOMContentLoaded', () => {
   titleInput.addEventListener('focus', () => updateActiveElement(titleInput));
   descInput.addEventListener('focus', () => updateActiveElement(descInput));
 
-  // Adatta altezza del titolo durante la digitazione per a capo automatico
   titleInput.addEventListener('input', () => {
     titleInput.style.height = 'auto';
     titleInput.style.height = titleInput.scrollHeight + 'px';
   });
 
-  // Cancella tutto il testo
+  // Cancella Tutto
   clearTextBtn.addEventListener('click', () => {
     titleInput.value = '';
     titleInput.style.height = 'auto';
     descInput.value = '';
   });
 
-  // Apri / Chiudi Ghiera Font
+  // Mostra / Nascondi Ghiera Font
   fontSizeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fontPickerPill.classList.toggle('active');
+    if (fontPickerPill.classList.contains('active')) {
+      const currentSize = parseInt(fontSizeBtn.textContent) || 22;
+      selectFontSize(currentSize);
+    }
   });
 
   document.addEventListener('click', (e) => {
