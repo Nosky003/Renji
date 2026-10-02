@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       transform: translateX(0);
     }
 
-    /* HEADER */
+    /* HEADER CON LINEA IN BASSO DA BORDO A BORDO */
     .piante-header {
       display: flex;
       align-items: center;
@@ -72,62 +72,70 @@ document.addEventListener('DOMContentLoaded', () => {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 12px 16px 0 16px;
-      gap: 12px;
+      padding: 0;
       overflow: hidden;
       box-sizing: border-box;
     }
 
-    /* SEZIONE CONTENITORE FOTO + LINEA SOTTILE */
-    .photos-section-wrapper {
+    /* ZONA DI SCORRIMENTO FOTO TRA LE DUE LINEE (DA BORDO A BORDO) */
+    .photos-scroll-zone {
       display: flex;
       flex-direction: column;
+      width: 100%;
+      border-bottom: 1px solid #f0f0f0; /* Linea divisoria inferiore da bordo a bordo */
+      background-color: #ffffff;
       flex-shrink: 0;
-      border-bottom: 1px solid #e0e0e0; /* LINEA SOTTILE TRA LE FOTO E IL RETTANGOLO TESTO */
-      padding-bottom: 8px;
+      box-sizing: border-box;
     }
 
-    /* SCORRIMENTO ORIZZONTALE FOTO CON SCROLLBAR IN ALTO */
+    /* BARRA DI SCORRIMENTO INTEGRATA IN ALTO */
+    .custom-scrollbar-track {
+      width: 100%;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      box-sizing: border-box;
+      background-color: transparent;
+    }
+
+    .custom-scrollbar-bg {
+      width: 100%;
+      height: 5px;
+      background-color: #e8e8ed;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .custom-scrollbar-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 30%;
+      background-color: #8e8e93;
+      border-radius: 10px;
+      transition: transform 0.05s ease-out;
+    }
+
+    /* CONTENITORE FOTO SCORREVOLE TOUCH/GESTURE */
     .photos-scroll-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      overflow-x: scroll !important;
+      overflow-x: auto !important;
       overflow-y: hidden;
-      padding: 10px 16px 8px 16px;
-      margin-left: -16px;
-      margin-right: -16px;
-      width: calc(100% + 32px);
-      -webkit-overflow-scrolling: touch;
+      padding: 8px 16px 14px 16px;
+      width: 100%;
+      -webkit-overflow-scrolling: touch !important;
       touch-action: pan-x;
-      flex-shrink: 0;
-      min-height: 110px;
+      scrollbar-width: none; /* Nasconde scrollbar nativa su Firefox */
       box-sizing: border-box;
-
-      /* POSIZIONA LA BARRA DI SCORRIMENTO SOPRA LE FOTO */
-      transform: rotateX(180deg);
     }
 
-    /* RIPRISTINA L'ORIENTAMENTO CORRETTO DELLE FOTO DENTRO */
-    .photos-scroll-container > * {
-      transform: rotateX(180deg);
-    }
-
-    /* BARRA DI SCORRIMENTO ORIZZONTALE VISIBILE */
     .photos-scroll-container::-webkit-scrollbar {
-      height: 6px;
-      display: block;
-    }
-
-    .photos-scroll-container::-webkit-scrollbar-track {
-      background: #e8e8ed;
-      border-radius: 10px;
-      margin: 0 16px;
-    }
-
-    .photos-scroll-container::-webkit-scrollbar-thumb {
-      background: #8e8e93;
-      border-radius: 10px;
+      display: none; /* Nasconde scrollbar nativa per usare quella custom in alto */
     }
 
     .photo-wrapper {
@@ -181,7 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     }
 
-    /* SCHEDA PRINCIPALE - ALLUNGATA FINO IN BASSO */
+    /* SCHEDA PRINCIPALE - SCHERMO INTERO SOTTO LA SECONDA LINEA */
+    .main-card-wrapper {
+      flex: 1;
+      padding: 12px 16px 0 16px;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
     .main-card {
       flex: 1;
       border: 1px solid #e0e0e0;
@@ -221,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* SELETTORE FONT CON TOUCH/SCROLLABILITÀ ABILITATA */
+    /* SELETTORE FONT */
     .font-control-wrapper {
       position: relative;
     }
@@ -375,36 +391,44 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="piante-body">
         <input type="file" id="pianteFileInput" accept="image/*" style="display:none;" multiple>
         
-        <!-- Sezione Foto con Linea Sottile -->
-        <div class="photos-section-wrapper">
-          <!-- Contenitore Foto a Scorrimento Orizzontale -->
+        <!-- FASCE DI SCORRIMENTO FOTO ISOLATA E RACCHIUSA TRA LE DUE LINEE -->
+        <div class="photos-scroll-zone">
+          <!-- BARRA DI SCORRIMENTO SUPERIORE CUSTOM -->
+          <div class="custom-scrollbar-track">
+            <div class="custom-scrollbar-bg">
+              <div class="custom-scrollbar-thumb" id="customScrollThumb"></div>
+            </div>
+          </div>
+
+          <!-- CONTENITORE FOTO SCORREVOLE -->
           <div class="photos-scroll-container" id="photosScrollContainer">
             <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
           </div>
         </div>
 
-        <!-- Scheda Estesa fino a fondo schermo -->
-        <div class="main-card">
-          <div class="card-actions-row">
-            <button type="button" class="trash-btn" id="clearTextBtn" title="Cancella testo">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-            </button>
+        <!-- SCHEDA DI SCRITTURA REALTIVA SOTTO LA LINEA -->
+        <div class="main-card-wrapper">
+          <div class="main-card">
+            <div class="card-actions-row">
+              <button type="button" class="trash-btn" id="clearTextBtn" title="Cancella testo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
 
-            <!-- Selettore Font -->
-            <div class="font-control-wrapper">
-              <button type="button" class="font-size-circle" id="fontSizeBtn">18</button>
-              <div class="font-picker-pill" id="fontPickerPill"></div>
+              <div class="font-control-wrapper">
+                <button type="button" class="font-size-circle" id="fontSizeBtn">18</button>
+                <div class="font-picker-pill" id="fontPickerPill"></div>
+              </div>
+
+              <button type="button" class="save-btn" id="pianteSaveBtn">SALVA</button>
             </div>
 
-            <button type="button" class="save-btn" id="pianteSaveBtn">SALVA</button>
-          </div>
-
-          <div class="inputs-container">
-            <textarea class="title-textarea" id="plantTitleInput" placeholder="Titolo..." rows="1"></textarea>
-            <textarea class="description-textarea" id="plantDescInput" placeholder="Descrizione..."></textarea>
+            <div class="inputs-container">
+              <textarea class="title-textarea" id="plantTitleInput" placeholder="Titolo..." rows="1"></textarea>
+              <textarea class="description-textarea" id="plantDescInput" placeholder="Descrizione..."></textarea>
+            </div>
           </div>
         </div>
       </div>
@@ -417,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('pianteFileInput');
   const addBtn = document.getElementById('pianteAddBtn');
   const photosContainer = document.getElementById('photosScrollContainer');
+  const scrollThumb = document.getElementById('customScrollThumb');
   const titleInput = document.getElementById('plantTitleInput');
   const descInput = document.getElementById('plantDescInput');
   const clearTextBtn = document.getElementById('clearTextBtn');
@@ -427,6 +452,32 @@ document.addEventListener('DOMContentLoaded', () => {
   let loadedImagesBase64 = [];
   let activeElement = titleInput;
 
+  // FUNZIONE AGGIORNAMENTO POSIZIONE E DIMENSIONE BARRA DI SCORRIMENTO CUSTOM
+  function updateScrollbar() {
+    const scrollWidth = photosContainer.scrollWidth;
+    const clientWidth = photosContainer.clientWidth;
+    const scrollLeft = photosContainer.scrollLeft;
+
+    if (scrollWidth <= clientWidth) {
+      scrollThumb.style.width = '100%';
+      scrollThumb.style.transform = 'translateX(0px)';
+      return;
+    }
+
+    const thumbRatio = clientWidth / scrollWidth;
+    const thumbWidthPercent = Math.max(thumbRatio * 100, 15); // Larghezza minima 15%
+    scrollThumb.style.width = `${thumbWidthPercent}%`;
+
+    const maxScrollLeft = scrollWidth - clientWidth;
+    const maxTranslatePercent = 100 - thumbWidthPercent;
+    const currentTranslate = (scrollLeft / maxScrollLeft) * (maxTranslatePercent / thumbWidthPercent) * 100;
+
+    scrollThumb.style.transform = `translateX(${currentTranslate}%)`;
+  }
+
+  photosContainer.addEventListener('scroll', updateScrollbar);
+  window.addEventListener('resize', updateScrollbar);
+
   // Popola la tendina font (da 12px a 32px)
   const fontSizes = [12, 14, 16, 18, 20, 22, 24, 28, 32];
   fontSizes.forEach(size => {
@@ -435,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
     opt.dataset.size = size;
     opt.textContent = size;
 
-    // Selezione con singolo Tap
     opt.addEventListener('click', (e) => {
       e.stopPropagation();
       selectFontSize(size);
@@ -486,14 +536,16 @@ document.addEventListener('DOMContentLoaded', () => {
           const index = loadedImagesBase64.indexOf(base64);
           if (index > -1) loadedImagesBase64.splice(index, 1);
           wrapper.remove();
+          updateScrollbar();
         });
 
         wrapper.appendChild(img);
         wrapper.appendChild(delBtn);
         photosContainer.insertBefore(wrapper, addBtn);
 
-        // Auto-scroll verso destra alla creazione dell'immagine
+        // Auto-scroll e aggiornamento barra
         photosContainer.scrollLeft = photosContainer.scrollWidth;
+        setTimeout(updateScrollbar, 50);
       };
       reader.readAsDataURL(file);
     });
@@ -583,6 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadedImagesBase64 = [];
       document.querySelectorAll('.photo-wrapper').forEach(w => w.remove());
       fontPickerPill.classList.remove('active');
+      updateScrollbar();
       window.closePianteModal();
 
     } catch (err) {
@@ -590,4 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert("Errore durante il salvataggio: " + err.message);
     }
   });
+
+  // Inizializza posizione barra al caricamento
+  updateScrollbar();
 });
