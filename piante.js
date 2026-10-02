@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       transform: translateX(0);
     }
 
-    /* HEADER CON LINEA IN BASSO DA BORDO A BORDO */
+    /* HEADER */
     .piante-header {
       display: flex;
       align-items: center;
@@ -77,49 +77,40 @@ document.addEventListener('DOMContentLoaded', () => {
       box-sizing: border-box;
     }
 
-    /* ZONA DI SCORRIMENTO FOTO TRA LE DUE LINEE (DA BORDO A BORDO) */
+    /* ZONA DI SCORRIMENTO FOTO */
     .photos-scroll-zone {
       display: flex;
       flex-direction: column;
       width: 100%;
-      border-bottom: 1px solid #f0f0f0; /* Linea divisoria inferiore da bordo a bordo */
+      border-bottom: 1px solid #f0f0f0;
       background-color: #ffffff;
       flex-shrink: 0;
       box-sizing: border-box;
     }
 
-    /* BARRA DI SCORRIMENTO INTEGRATA IN ALTO */
+    /* BARRA DI SCORRIMENTO CUSTOM - PICCOLO TRATTINO */
     .custom-scrollbar-track {
       width: 100%;
-      height: 12px;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
+      height: 10px;
+      position: relative;
       box-sizing: border-box;
       background-color: transparent;
-    }
-
-    .custom-scrollbar-bg {
-      width: 100%;
-      height: 5px;
-      background-color: #e8e8ed;
-      border-radius: 10px;
-      position: relative;
-      overflow: hidden;
+      margin-top: 4px;
     }
 
     .custom-scrollbar-thumb {
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 30%;
+      top: 2px;
+      left: 16px;
+      height: 4px;
+      width: 30px; /* Trattino corto fisso */
       background-color: #8e8e93;
-      border-radius: 10px;
+      border-radius: 4px;
+      pointer-events: none;
       transition: transform 0.05s ease-out;
     }
 
-    /* CONTENITORE FOTO SCORREVOLE TOUCH/GESTURE */
+    /* CONTENITORE FOTO SCORREVOLE TOUCH */
     .photos-scroll-container {
       display: flex;
       align-items: center;
@@ -130,12 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 100%;
       -webkit-overflow-scrolling: touch !important;
       touch-action: pan-x;
-      scrollbar-width: none; /* Nasconde scrollbar nativa su Firefox */
+      scrollbar-width: none;
       box-sizing: border-box;
     }
 
     .photos-scroll-container::-webkit-scrollbar {
-      display: none; /* Nasconde scrollbar nativa per usare quella custom in alto */
+      display: none;
     }
 
     .photo-wrapper {
@@ -189,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     }
 
-    /* SCHEDA PRINCIPALE - SCHERMO INTERO SOTTO LA SECONDA LINEA */
+    /* SCHEDA PRINCIPALE */
     .main-card-wrapper {
       flex: 1;
       padding: 12px 16px 0 16px;
@@ -213,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       margin-bottom: 0;
     }
 
-    /* RIGA BOTTONI AZIONE */
+    /* BOTTONI AZIONE */
     .card-actions-row {
       display: flex;
       align-items: center;
@@ -237,7 +228,6 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* SELETTORE FONT */
     .font-control-wrapper {
       position: relative;
     }
@@ -391,22 +381,19 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="piante-body">
         <input type="file" id="pianteFileInput" accept="image/*" style="display:none;" multiple>
         
-        <!-- FASCE DI SCORRIMENTO FOTO ISOLATA E RACCHIUSA TRA LE DUE LINEE -->
         <div class="photos-scroll-zone">
-          <!-- BARRA DI SCORRIMENTO SUPERIORE CUSTOM -->
+          <!-- BARRA TRATTINO PICCOLO -->
           <div class="custom-scrollbar-track">
-            <div class="custom-scrollbar-bg">
-              <div class="custom-scrollbar-thumb" id="customScrollThumb"></div>
-            </div>
+            <div class="custom-scrollbar-thumb" id="customScrollThumb"></div>
           </div>
 
           <!-- CONTENITORE FOTO SCORREVOLE -->
           <div class="photos-scroll-container" id="photosScrollContainer">
+            <div id="photosList" style="display: flex; gap: 12px;"></div>
             <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
           </div>
         </div>
 
-        <!-- SCHEDA DI SCRITTURA REALTIVA SOTTO LA LINEA -->
         <div class="main-card-wrapper">
           <div class="main-card">
             <div class="card-actions-row">
@@ -441,6 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('pianteFileInput');
   const addBtn = document.getElementById('pianteAddBtn');
   const photosContainer = document.getElementById('photosScrollContainer');
+  const photosList = document.getElementById('photosList');
   const scrollThumb = document.getElementById('customScrollThumb');
   const titleInput = document.getElementById('plantTitleInput');
   const descInput = document.getElementById('plantDescInput');
@@ -452,27 +440,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let loadedImagesBase64 = [];
   let activeElement = titleInput;
 
-  // FUNZIONE AGGIORNAMENTO POSIZIONE E DIMENSIONE BARRA DI SCORRIMENTO CUSTOM
+  // AGGIORNAMENTO POSIZIONE TRATTINO BARRA CUSTOM
   function updateScrollbar() {
     const scrollWidth = photosContainer.scrollWidth;
     const clientWidth = photosContainer.clientWidth;
     const scrollLeft = photosContainer.scrollLeft;
 
     if (scrollWidth <= clientWidth) {
-      scrollThumb.style.width = '100%';
-      scrollThumb.style.transform = 'translateX(0px)';
+      scrollThumb.style.display = 'none';
       return;
+    } else {
+      scrollThumb.style.display = 'block';
     }
 
-    const thumbRatio = clientWidth / scrollWidth;
-    const thumbWidthPercent = Math.max(thumbRatio * 100, 15); // Larghezza minima 15%
-    scrollThumb.style.width = `${thumbWidthPercent}%`;
-
+    const availableTrackWidth = clientWidth - 32 - 30; // Spazio totale meno margini e larghezza del trattino (30px)
     const maxScrollLeft = scrollWidth - clientWidth;
-    const maxTranslatePercent = 100 - thumbWidthPercent;
-    const currentTranslate = (scrollLeft / maxScrollLeft) * (maxTranslatePercent / thumbWidthPercent) * 100;
+    const translateX = (scrollLeft / maxScrollLeft) * availableTrackWidth;
 
-    scrollThumb.style.transform = `translateX(${currentTranslate}%)`;
+    scrollThumb.style.transform = `translateX(${translateX}px)`;
   }
 
   photosContainer.addEventListener('scroll', updateScrollbar);
@@ -541,10 +526,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         wrapper.appendChild(img);
         wrapper.appendChild(delBtn);
-        photosContainer.insertBefore(wrapper, addBtn);
+        
+        // Aggiunge la nuova immagine da sinistra verso destra
+        photosList.appendChild(wrapper);
 
-        // Auto-scroll e aggiornamento barra
-        photosContainer.scrollLeft = photosContainer.scrollWidth;
         setTimeout(updateScrollbar, 50);
       };
       reader.readAsDataURL(file);
@@ -633,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
       titleInput.style.height = 'auto';
       descInput.value = '';
       loadedImagesBase64 = [];
-      document.querySelectorAll('.photo-wrapper').forEach(w => w.remove());
+      photosList.innerHTML = '';
       fontPickerPill.classList.remove('active');
       updateScrollbar();
       window.closePianteModal();
@@ -644,6 +629,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Inizializza posizione barra al caricamento
   updateScrollbar();
 });
