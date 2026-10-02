@@ -73,32 +73,50 @@ document.addEventListener('DOMContentLoaded', () => {
       display: flex;
       flex-direction: column;
       padding: 12px 16px;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
       gap: 12px;
-      overflow-y: auto;
+      overflow: hidden;
       box-sizing: border-box;
     }
 
-    /* SEZIONE FOTO CON SCORRIMENTO ORIZZONTALE OTTIMIZZATO */
+    /* SEZIONE FOTO CON SCORRIMENTO ORIZZONTALE VISIBILE */
     .photos-scroll-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      overflow-x: scroll !important;
+      overflow-x: auto !important;
       overflow-y: hidden;
-      padding: 10px 16px 12px 4px;
+      padding: 6px 16px 12px 16px;
+      margin-left: -16px;
+      margin-right: -16px;
+      width: calc(100% + 32px);
       -webkit-overflow-scrolling: touch;
       touch-action: pan-x;
       flex-shrink: 0;
-      min-height: 108px;
-      width: 100%;
+      min-height: 105px;
       box-sizing: border-box;
+    }
+
+    /* BARRA DI SCORRIMENTO ORIZZONTALE VISIBILE */
+    .photos-scroll-container::-webkit-scrollbar {
+      height: 5px;
+    }
+
+    .photos-scroll-container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 10px;
+      margin: 0 16px;
+    }
+
+    .photos-scroll-container::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
     }
 
     .photo-wrapper {
       position: relative;
-      width: 90px;
-      height: 90px;
+      width: 85px;
+      height: 85px;
       flex-shrink: 0;
     }
 
@@ -110,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
-    /* BOTTONE ELIMINA FOTO SENZA BORDO BIANCO */
     .delete-photo-btn {
       position: absolute;
       top: -5px;
@@ -145,13 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cursor: pointer;
       flex-shrink: 0;
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
-      margin-right: 16px;
     }
 
-    /* CONTENITORE PRINCIPALE DI DIMENSIONE FISSA E POSIZIONATO PIÙ IN BASSO */
+    /* SCHEDA PRINCIPALE - ALLUNGATA VERSO IL BASSO */
     .main-card {
-      height: 520px;
-      max-height: calc(100vh - 220px);
+      flex: 1;
       border: 1px solid #e0e0e0;
       border-radius: 20px;
       padding: 16px;
@@ -161,11 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
       background-color: #ffffff;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       position: relative;
-      margin-top: 6px;
       box-sizing: border-box;
+      margin-bottom: calc(env(safe-area-inset-bottom) + 8px);
     }
 
-    /* RIGA BOTTONI */
+    /* RIGA BOTTONI AZIONE */
     .card-actions-row {
       display: flex;
       align-items: center;
@@ -175,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
       z-index: 20;
     }
 
-    /* BOTTONE CESTINO */
     .trash-btn {
       width: 38px;
       height: 38px;
@@ -190,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* GHIERA FONT STILE IPHONE SULLA SOGLIA DEL RETTANGOLO */
+    /* SELETTORE FONT A TOCCO CON DEFAULT A 18 */
     .font-control-wrapper {
       position: relative;
     }
@@ -211,66 +225,41 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
-    /* GHIERA VERTICALE SBURANTE SULLA PARTE SUPERIORE ED INFERIORE DEL RETTANGOLO */
     .font-picker-pill {
       display: none;
       position: absolute;
-      top: -60px;
+      top: -110px;
       left: 50%;
       transform: translateX(-50%);
-      width: 48px;
-      height: 160px;
+      width: 52px;
+      height: 180px;
       background-color: #ffffff;
       border-radius: 24px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      -webkit-overflow-scrolling: touch;
+      overflow-y: auto;
       z-index: 50;
       box-sizing: border-box;
-      padding: 60px 0;
-    }
-
-    .font-picker-pill::-webkit-scrollbar {
-      display: none;
+      padding: 8px 0;
     }
 
     .font-picker-pill.active {
       display: block;
     }
 
-    /* BARRETTE ORIZZONTALI NERE AL CENTRO DELLA GHIERA */
-    .font-picker-pill::before,
-    .font-picker-pill::after {
-      content: '';
-      position: absolute;
-      left: 6px;
-      right: 6px;
-      height: 1.5px;
-      background-color: #000000;
-      z-index: 60;
-      pointer-events: none;
-    }
-
-    .font-picker-pill::before {
-      top: 60px;
-    }
-
-    .font-picker-pill::after {
-      top: 100px;
-    }
-
     .font-option {
-      height: 40px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 500;
       color: #8e8e93;
-      scroll-snap-align: center;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: background-color 0.15s ease;
+    }
+
+    .font-option:active {
+      background-color: #f0f0f0;
     }
 
     .font-option.selected {
@@ -279,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
       color: #000000;
     }
 
-    /* BOTTONE SALVA */
     .save-btn {
       background-color: #ffffff;
       color: #000000;
@@ -296,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
       background-color: #f5f5f7;
     }
 
-    /* CAMPI TESTO CON A CAPO AUTOMATICO */
+    /* CAMPI TESTO */
     .inputs-container {
       flex: 1;
       display: flex;
@@ -309,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 100%;
       border: none;
       outline: none;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
       color: #000000;
       background: transparent;
@@ -321,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
       white-space: pre-wrap;
       word-wrap: break-word;
       overflow: hidden;
-      min-height: 36px;
+      min-height: 32px;
     }
 
     .title-textarea::placeholder {
@@ -334,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
       flex: 1;
       border: none;
       outline: none;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 400;
       color: #3a3a3c;
       background: transparent;
@@ -354,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 
-  // STRUTTURA HTML SCHERMATA
+  // STRUTTURA HTML
   const container = document.createElement('div');
   container.innerHTML = `
     <div class="piante-modal" id="pianteModal">
@@ -366,15 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="piante-body">
         <input type="file" id="pianteFileInput" accept="image/*" style="display:none;" multiple>
         
-        <!-- Scorrimento Foto -->
+        <!-- Scorrimento Foto con Barra Visibile -->
         <div class="photos-scroll-container" id="photosScrollContainer">
           <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
         </div>
 
-        <!-- Scheda Testo & Comandi -->
+        <!-- Scheda Testo Allungata -->
         <div class="main-card">
           <div class="card-actions-row">
-            <!-- Cestino -->
             <button type="button" class="trash-btn" id="clearTextBtn" title="Cancella testo">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>
@@ -382,17 +369,15 @@ document.addEventListener('DOMContentLoaded', () => {
               </svg>
             </button>
 
-            <!-- Selettore Font a Ghiera iOS -->
+            <!-- Selettore Font con Default a 18 -->
             <div class="font-control-wrapper">
-              <button type="button" class="font-size-circle" id="fontSizeBtn">22</button>
+              <button type="button" class="font-size-circle" id="fontSizeBtn">18</button>
               <div class="font-picker-pill" id="fontPickerPill"></div>
             </div>
 
-            <!-- Tasto Salva -->
             <button type="button" class="save-btn" id="pianteSaveBtn">SALVA</button>
           </div>
 
-          <!-- Campi Titolo e Descrizione -->
           <div class="inputs-container">
             <textarea class="title-textarea" id="plantTitleInput" placeholder="Titolo..." rows="1"></textarea>
             <textarea class="description-textarea" id="plantDescInput" placeholder="Descrizione..."></textarea>
@@ -418,19 +403,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let loadedImagesBase64 = [];
   let activeElement = titleInput;
 
-  // Popola la ghiera del font (da 10px a 40px)
-  for (let size = 10; size <= 40; size += 2) {
+  // Popola la tendina font (da 12px a 32px)
+  const fontSizes = [12, 14, 16, 18, 20, 22, 24, 28, 32];
+  fontSizes.forEach(size => {
     const opt = document.createElement('div');
-    opt.className = `font-option ${size === 22 ? 'selected' : ''}`;
+    opt.className = `font-option ${size === 18 ? 'selected' : ''}`;
     opt.dataset.size = size;
     opt.textContent = size;
+
+    // Selezione immediata al singolo tocco (Tap)
     opt.addEventListener('click', (e) => {
       e.stopPropagation();
       selectFontSize(size);
       fontPickerPill.classList.remove('active');
     });
     fontPickerPill.appendChild(opt);
-  }
+  });
 
   function selectFontSize(size) {
     fontSizeBtn.textContent = size;
@@ -440,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.font-option').forEach(opt => {
       if (parseInt(opt.dataset.size) === size) {
         opt.classList.add('selected');
-        opt.scrollIntoView({ block: 'center', behavior: 'smooth' });
       } else {
         opt.classList.remove('selected');
       }
@@ -450,10 +437,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Chiusura
   closeBtn.addEventListener('click', () => window.closePianteModal());
 
-  // Apertura Foto
+  // Aggiungi Foto
   addBtn.addEventListener('click', () => fileInput.click());
 
-  // Caricamento Foto
   fileInput.addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
     files.forEach(file => {
@@ -481,42 +467,35 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapper.appendChild(img);
         wrapper.appendChild(delBtn);
         photosContainer.insertBefore(wrapper, addBtn);
+
+        // Scorre automaticamente verso destra per mostrare la nuova foto/bottone
+        photosContainer.scrollLeft = photosContainer.scrollWidth;
       };
       reader.readAsDataURL(file);
     });
     fileInput.value = '';
   });
 
-  // Gestione Focus Campi
-  function updateActiveElement(el) {
-    activeElement = el;
-    const currentSize = parseInt(window.getComputedStyle(activeElement).fontSize);
-    fontSizeBtn.textContent = currentSize;
-  }
-
-  titleInput.addEventListener('focus', () => updateActiveElement(titleInput));
-  descInput.addEventListener('focus', () => updateActiveElement(descInput));
+  // Gestione Focus dei Campi
+  titleInput.addEventListener('focus', () => { activeElement = titleInput; });
+  descInput.addEventListener('focus', () => { activeElement = descInput; });
 
   titleInput.addEventListener('input', () => {
     titleInput.style.height = 'auto';
     titleInput.style.height = titleInput.scrollHeight + 'px';
   });
 
-  // Cancella Tutto
+  // Cancella Testo
   clearTextBtn.addEventListener('click', () => {
     titleInput.value = '';
     titleInput.style.height = 'auto';
     descInput.value = '';
   });
 
-  // Mostra / Nascondi Ghiera Font
+  // Apertura/Chiusura Tendina Font
   fontSizeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fontPickerPill.classList.toggle('active');
-    if (fontPickerPill.classList.contains('active')) {
-      const currentSize = parseInt(fontSizeBtn.textContent) || 22;
-      selectFontSize(currentSize);
-    }
   });
 
   document.addEventListener('click', (e) => {
