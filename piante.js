@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       transform: translateX(0);
     }
 
+    /* HEADER */
     .piante-header {
       display: flex;
       align-items: center;
@@ -46,10 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     .piante-title {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #000000;
-      letter-spacing: 0.5px;
+      text-transform: none; /* Non tutto maiuscolo */
     }
 
     .piante-close-btn {
@@ -62,9 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 18px;
+      color: #000000; /* X nera */
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
     }
 
+    /* BODY */
     .piante-body {
       flex: 1;
       display: flex;
@@ -74,120 +78,199 @@ document.addEventListener('DOMContentLoaded', () => {
       overflow-y: auto;
     }
 
-    .top-section {
+    /* SEZIONE FOTO SCORREVOLE */
+    .photos-scroll-container {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin; /* Barra di scorrimento */
     }
 
-    .image-box {
-      width: 110px;
-      height: 110px;
-      border: 2px dashed #a0a0a0;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background-color: #fafafa;
-      overflow: hidden;
-    }
-
-    .image-box img {
-      width: 100%;
-      height: 100%;
+    .photo-card {
+      width: 100px;
+      height: 100px;
+      border-radius: 14px;
       object-fit: cover;
+      border: 1px solid #e0e0e0;
+      flex-shrink: 0;
     }
 
-    .image-placeholder-text {
-      font-size: 0.85rem;
-      color: #8e8e93;
-    }
-
-    .add-photo-btn {
-      width: 44px;
-      height: 44px;
+    .add-photo-circle-btn {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background-color: #000000;
       color: #ffffff;
       border: none;
-      font-size: 24px;
+      font-size: 26px;
+      line-height: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
 
-    .description-container {
+    /* SCHEDA PRINCIPALE */
+    .main-card {
       flex: 1;
-      position: relative;
+      border: 1px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-    }
-
-    .description-textarea {
-      width: 100%;
-      flex: 1;
-      min-height: 250px;
-      border: 1px solid #c7c7cc;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 1rem;
-      font-family: inherit;
-      resize: none;
-      outline: none;
-      box-sizing: border-box;
+      gap: 12px;
       background-color: #ffffff;
     }
 
-    .save-btn-container {
-      position: absolute;
-      top: 12px;
-      right: 12px;
+    /* BARRA SALVA E SELETTORE FONT */
+    .card-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-height: 38px;
+    }
+
+    /* CERCHIO / PILLOLA FONT */
+    .font-size-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      border: 1px solid #000000;
+      border-radius: 20px;
+      height: 34px;
+      padding: 0 10px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .font-size-number {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #000000;
+    }
+
+    .font-slider-wrapper {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-left: 6px;
+    }
+
+    .font-size-control.expanded .font-slider-wrapper {
+      display: flex;
+    }
+
+    .font-slider {
+      width: 90px;
+      accent-color: #000000;
     }
 
     .save-btn {
       background-color: #ffffff;
       color: #000000;
       border: 1px solid #000000;
-      border-radius: 16px;
-      padding: 6px 16px;
+      border-radius: 18px;
+      padding: 6px 18px;
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
     }
 
     .save-btn:active {
       background-color: #f2f2f7;
     }
+
+    /* CAMPI TESTO */
+    .inputs-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .title-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 22px; /* Font più grande */
+      font-weight: 700;
+      color: #000000;
+      background: transparent;
+      padding: 4px 0;
+      box-sizing: border-box;
+    }
+
+    .title-input::placeholder {
+      color: #8e8e93;
+      font-weight: 600;
+    }
+
+    .description-textarea {
+      width: 100%;
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 15px; /* Font più piccolo */
+      font-weight: 400;
+      color: #3a3a3c;
+      background: transparent;
+      resize: none;
+      font-family: inherit;
+      padding: 4px 0;
+      box-sizing: border-box;
+    }
+
+    .description-textarea::placeholder {
+      color: #8e8e93;
+    }
   `;
   document.head.appendChild(style);
 
+  // HTML Schermata
   const container = document.createElement('div');
   container.innerHTML = `
     <div class="piante-modal" id="pianteModal">
       <div class="piante-header">
-        <span class="piante-title">CATALOGO PIANTE</span>
+        <span class="piante-title">Catalogo piante</span>
         <button type="button" class="piante-close-btn" id="closePianteBtn">&times;</button>
       </div>
 
       <div class="piante-body">
-        <input type="file" id="pianteFileInput" accept="image/*" style="display:none;">
+        <input type="file" id="pianteFileInput" accept="image/*" style="display:none;" multiple>
         
-        <div class="top-section">
-          <div class="image-box" id="pianteImageBox">
-            <span class="image-placeholder-text" id="pianteImgLabel">Foto 1</span>
-            <img id="pianteImgPreview" src="" style="display:none;">
-          </div>
-          <button type="button" class="add-photo-btn" id="pianteAddBtn">+</button>
+        <!-- Scorrimento foto -->
+        <div class="photos-scroll-container" id="photosScrollContainer">
+          <button type="button" class="add-photo-circle-btn" id="pianteAddBtn">+</button>
         </div>
 
-        <div class="description-container">
-          <textarea class="description-textarea" id="pianteDesc" placeholder="Scrivi la descrizione qui..."></textarea>
-          <div class="save-btn-container">
+        <!-- Scheda con controlli e testo -->
+        <div class="main-card">
+          <div class="card-actions-row">
+            <!-- Cerchio / Pillola dimensione font -->
+            <div class="font-size-control" id="fontSizeControl">
+              <span class="font-size-number" id="fontSizeDisplay">22</span>
+              <div class="font-slider-wrapper">
+                <input type="range" class="font-slider" id="fontSlider" min="10" max="40" value="22">
+              </div>
+            </div>
+
+            <!-- Tasto Salva -->
             <button type="button" class="save-btn" id="pianteSaveBtn">SALVA</button>
+          </div>
+
+          <!-- Campi Titolo e Descrizione -->
+          <div class="inputs-container">
+            <input type="text" class="title-input" id="plantTitleInput" placeholder="Titolo..." />
+            <textarea class="description-textarea" id="plantDescInput" placeholder="Descrizione..."></textarea>
           </div>
         </div>
       </div>
@@ -195,92 +278,138 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.body.appendChild(container);
 
+  // Elementi DOM
   const closeBtn = document.getElementById('closePianteBtn');
   const fileInput = document.getElementById('pianteFileInput');
   const addBtn = document.getElementById('pianteAddBtn');
-  const imgPreview = document.getElementById('pianteImgPreview');
-  const imgLabel = document.getElementById('pianteImgLabel');
+  const photosContainer = document.getElementById('photosScrollContainer');
+  const titleInput = document.getElementById('plantTitleInput');
+  const descInput = document.getElementById('plantDescInput');
+  const fontSizeControl = document.getElementById('fontSizeControl');
+  const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+  const fontSlider = document.getElementById('fontSlider');
   const saveBtn = document.getElementById('pianteSaveBtn');
-  const descInput = document.getElementById('pianteDesc');
 
-  let currentBase64Image = null;
+  let loadedImagesBase64 = [];
+  let activeElement = titleInput; // Elemento di testo attivo di default
 
+  // Chiusura schermata
   closeBtn.addEventListener('click', () => window.closePianteModal());
+
+  // Apertura selettore file
   addBtn.addEventListener('click', () => fileInput.click());
 
+  // Aggiunta immagini
   fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
       const reader = new FileReader();
       reader.onload = (evt) => {
-        currentBase64Image = evt.target.result;
-        imgPreview.src = currentBase64Image;
-        imgPreview.style.display = 'block';
-        imgLabel.style.display = 'none';
+        const base64 = evt.target.result;
+        loadedImagesBase64.push(base64);
+
+        // Crea miniatura
+        const img = document.createElement('img');
+        img.src = base64;
+        img.className = 'photo-card';
+
+        // Inserisce l'immagine prima del pulsante +
+        photosContainer.insertBefore(img, addBtn);
       };
       reader.readAsDataURL(file);
+    });
+    fileInput.value = '';
+  });
+
+  // Traccia quale campo si sta modificando per aggiornare il numero nel cerchio
+  function updateActiveField(el) {
+    activeElement = el;
+    const currentSize = parseInt(window.getComputedStyle(activeElement).fontSize);
+    fontSizeDisplay.textContent = currentSize;
+    fontSlider.value = currentSize;
+  }
+
+  titleInput.addEventListener('focus', () => updateActiveField(titleInput));
+  descInput.addEventListener('focus', () => updateActiveField(descInput));
+
+  // Toggle Espansione Pillola Font
+  fontSizeControl.addEventListener('click', (e) => {
+    if (e.target !== fontSlider) {
+      fontSizeControl.classList.toggle('expanded');
     }
   });
 
+  // Modifica dimensione font tramite Slider (Ghiera)
+  fontSlider.addEventListener('input', (e) => {
+    const newSize = e.target.value;
+    fontSizeDisplay.textContent = newSize;
+    if (activeElement) {
+      activeElement.style.fontSize = `${newSize}px`;
+    }
+  });
+
+  // Salvataggio su iPhone (Capacitor Filesystem)
   saveBtn.addEventListener('click', async () => {
+    const titleText = titleInput.value.trim();
     const descText = descInput.value.trim();
-    if (!descText && !currentBase64Image) {
-      alert("Inserisci un'immagine o una descrizione prima di salvare.");
+
+    if (!titleText && !descText && loadedImagesBase64.length === 0) {
+      alert("Inserisci almeno un titolo, una descrizione o una foto prima di salvare.");
       return;
     }
 
+    const folderTitle = titleText ? titleText.replace(/[^a-zA-Z0-9_-]/g, '_') : 'Senza_Titolo';
     const timeStamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const folderName = `Studio_${timeStamp}`;
+    const folderName = `${folderTitle}_${timeStamp}`;
 
     try {
-      // Verifica presenza del plugin Filesystem Capacitor
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
         const Filesystem = window.Capacitor.Plugins.Filesystem;
         const Directory = 'DOCUMENTS';
-
-        // Crea la struttura: Renji / Catalogo Piante / Studio_...
         const subFolderPath = `Catalogo Piante/${folderName}`;
 
+        // Crea la cartella "Catalogo Piante/Nome_Pianta_Data"
         await Filesystem.mkdir({
           path: subFolderPath,
           directory: Directory,
           recursive: true
         });
 
-        // Salva la descrizione in TXT
-        if (descText) {
-          await Filesystem.writeFile({
-            path: `${subFolderPath}/descrizione.txt`,
-            data: descText,
-            directory: Directory,
-            encoding: 'utf8'
-          });
-        }
+        // Salva Testo (Titolo + Descrizione)
+        const fullTextContent = `TITOLO:\n${titleText}\n\nDESCRIZIONE:\n${descText}`;
+        await Filesystem.writeFile({
+          path: `${subFolderPath}/scheda.txt`,
+          data: fullTextContent,
+          directory: Directory,
+          encoding: 'utf8'
+        });
 
-        // Salva la foto
-        if (currentBase64Image) {
-          const base64Data = currentBase64Image.split(',')[1];
+        // Salva le foto numerate
+        for (let i = 0; i < loadedImagesBase64.length; i++) {
+          const base64Data = loadedImagesBase64[i].split(',')[1];
           await Filesystem.writeFile({
-            path: `${subFolderPath}/foto.jpg`,
+            path: `${subFolderPath}/foto_${i + 1}.jpg`,
             data: base64Data,
             directory: Directory
           });
         }
 
-        alert(`Studio salvato con successo nella cartella File di iPhone in: Renji / Catalogo Piante / ${folderName}`);
+        alert(`Studio salvato in File: Renji / Catalogo Piante / ${folderName}`);
       } else {
-        alert("Salvataggio completato in modalità browser Web.");
+        alert("Salvataggio simulato nel browser.");
       }
 
       // Reset dell'interfaccia
+      titleInput.value = '';
       descInput.value = '';
-      currentBase64Image = null;
-      imgPreview.style.display = 'none';
-      imgLabel.style.display = 'block';
-      fileInput.value = '';
+      loadedImagesBase64 = [];
+      document.querySelectorAll('.photo-card').forEach(img => img.remove());
+      fontSizeControl.classList.remove('expanded');
+      window.closePianteModal();
+
     } catch (err) {
       console.error(err);
-      alert("Errore durante il salvataggio dei file: " + err.message);
+      alert("Errore durante il salvataggio: " + err.message);
     }
   });
 });
